@@ -8,9 +8,17 @@
 
 <link rel="stylesheet" href="../static/alerts.css" />
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+
+<script src="https://code.jquery.com/jquery-3.7.1.js
+"></script>
+<script src="https://cdn.datatables.net/2.0.3/js/dataTables.js
+"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js
+"></script>
+
 
 
 
@@ -18,44 +26,17 @@
     <input class="form-control" id="myInput" type="text" placeholder="Search by any field ..">
     <br>
 
-<!--
-    <div>
-        <div class="row">
-          <form id="search" role="form" style="border:0">
-            <div class="col-md-3">
-              <ul class="nav nav-stacked">
-                <li><strong>From Date</strong></li>
-                <li>
-                  <input type="text" class="form-control" value="2015-06-17" id="dateFrom" />
-                </li>
-              </ul>
-            </div>
-      
-            <div class="col-md-3">
-              <ul class="nav nav-stacked">
-                <li><strong>To Date</strong></li>
-                <li>
-                  <input type="text" class="form-control" value="2015-06-19" id="dateTo" />
-                </li>
-              </ul>
-            </div>
-      
-            <div class="col-md-3">
-              <ul class="nav nav-stacked">
-                <li>&nbsp;</li>
-                <li>
-                    <br>
-                  <button class="btn btn-primary" type="button" id="getJsonSrc">Filter date</button>
-                </li>
-              </ul>
-            </div>
-          </form>
-        </div>
-        <br>    <br>
+    <table  cellspacing="5" cellpadding="5">
+      <tbody><tr>
+          <td>Minimum date:</td>
+          <td><input type="text" id="min" name="min"></td>
+      </tr>
+      <tr>
+          <td>Maximum date:</td>
+          <td><input type="text" id="max" name="max"></td>
+      </tr>
+  </tbody></table>
 
-
-</div>  
--->
  <table id="Alerts_table" class="table table-hover table-dark" >
       <thead>
           <tr class="table-active">
@@ -108,33 +89,40 @@ $(function(){
       });
     });
 
-/* date filter
-
-    $("#getJsonSrc").click(function () {
-  $("#Alerts_table thead").show();
-  var $table = $("#Alerts_table"),
-    $startDate = new Date($("#dateFrom").val()),
-    $endDate = new Date($("#dateTo").val()),
-    $jsonSrc = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/77979/demo.json";
-
-  var my_array;
-  $.getJSON($jsonSrc).success(function (data) {
-    my_array = [];
-
-    for (var i = 0; i < data.length; i++) {
-      var this_date = new Date(data[i].date);
-      if (this_date >= $startDate && this_date <= $endDate) {
-        my_array.push(data[i]);
-      }
-    }
-    my_array = JSON.stringify(my_array);
-    alert(my_array);
-  });
-  $table.bootstrapTable("load", my_array);
-});
-
-
-*/
+    let minDate, maxDate;
+ 
+ // Custom filtering function which will search data in column four between two values
+ DataTable.ext.search.push(function (settings, data, dataIndex) {
+     let min = minDate.val();
+     let max = maxDate.val();
+     let date = new Date(data[4]);
+  
+     if (
+         (min === null && max === null) ||
+         (min === null && date <= max) ||
+         (min <= date && max === null) ||
+         (min <= date && date <= max)
+     ) {
+         return true;
+     }
+     return false;
+ });
+  
+ // Create date inputs
+ minDate = new DateTime('#min', {
+     format: 'MMMM Do YYYY'
+ });
+ maxDate = new DateTime('#max', {
+     format: 'MMMM Do YYYY'
+ });
+  
+ // DataTables initialisation
+ let table = new DataTable('#Alerts_table');
+  
+ // Refilter the table
+ document.querySelectorAll('#min, #max').forEach((el) => {
+     el.addEventListener('change', () => table.draw());
+ });
 
     </script>
 
