@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+  
+
+
+    <div class="container">
+        <div class="row">
+          <form id="search" role="form" style="border:0">
+            <div class="col-md-3">
+              <ul class="nav nav-stacked">
+                <li><strong>From Date</strong></li>
+                <li>
+                  <input type="text" class="form-control" value="2015-06-17" id="dateFrom" />
+                </li>
+              </ul>
+            </div>
+      
+            <div class="col-md-3">
+              <ul class="nav nav-stacked">
+                <li><strong>To Date</strong></li>
+                <li>
+                  <input type="text" class="form-control" value="2015-06-19" id="dateTo" />
+                </li>
+              </ul>
+            </div>
+      
+            <div class="col-md-3">
+              <ul class="nav nav-stacked">
+                <li>&nbsp;</li>
+                <li>
+                  <button class="btn btn-primary" type="button" id="getJsonSrc">Search</button>
+                </li>
+              </ul>
+            </div>
+          </form>
+        </div>
+        <!-- Row -->
+      
+        <div class="row">
+          <div class="col-md-12">
+            <table id="dataTable" data-pagination="true" data-page-size="5" data-page-list="5, 10, All" data-search="true" data-search-align="left" data-striped="true" data-show-refresh="true" data-sort-name="date" data-sort-order="desc" data-search-text="Narrow results">
+              <thead>
+                <tr>
+                  <th class="col-xs-1" data-field="date">Date</th>
+                  <th class="col-xs-1" data-field="operator">Operator</th>
+                  <th class="col-xs-2" data-field="type">Type</th>
+                  <th class="col-xs-2" data-field="subType">Sub Type</th>
+                  <th class="col-xs-5" data-field="message">Message</th>
+                </tr>
+              </thead>
+              <tr>
+                <td >2024-04-20</td>
+                <td>Maria Anders</td>
+                <td>Germany</td>
+                <td>Germany</td>
+                <td>Germany</td>
+              </tr>
+              <tr>
+                <td > 2024-03-25</td>
+                <td>Francisco Chang</td>
+                <td>Mexico</td>
+                <td>Germany</td>
+                <td>Germany</td>
+              </tr>
+
+
+            </table>
+          </div>
+        </div>
+      </div>
+
+      
+
+
+</body>
+</html>
+
+<script>
+    $("#getJsonSrc").click(function() {
+  $("#dataTable thead").show();
+  var $table = $("#dataTable"),
+    $startDate = new Date($("#dateFrom").val()),
+    $endDate = new Date($("#dateTo").val()),
+    $jsonSrc = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/77979/demo.json";
+
+  var my_array;
+  $.getJSON($jsonSrc).success(function(data) {
+    my_array = [];
+
+    for (var i = 0; i < data.length; i++) {
+      var this_date = new Date(data[i].date);
+      if ((this_date >= $startDate) && (this_date <= $endDate)) {
+        my_array.push(data[i]);
+
+      }
+    }
+    my_array = JSON.stringify(my_array);
+    alert(my_array);
+  });
+  $table.bootstrapTable("load", my_array);
+});
+</script>
