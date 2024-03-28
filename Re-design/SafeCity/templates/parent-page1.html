@@ -63,7 +63,7 @@
           <a href="alerts" class="navigation-links-nav2">
             <span>Alerts</span>
           </a>
-          <span class="navigation-links-alertcount"><span>5</span></span>
+          <span class="navigation-links-alertcount"><span id="alertCount">{{ alerts_count }}</span></span>
           <a href="analytics" class="navigation-links-nav3">
             <span>Analytics</span>
           </a>
@@ -173,3 +173,21 @@
     <script data-section-id="navbar" src="https://unpkg.com/@teleporthq/teleport-custom-scripts" ></script>
   </body>
 </html>
+
+<script>
+  // Function to fetch the number of alerts and update the count
+  function updateAlertCount() {
+    fetch('/get_alert_count')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('alertCount').textContent = data.alertCount;
+      })
+      .catch(error => console.error('Error fetching alert count:', error));
+  }
+
+  // Call updateAlertCount function initially to update the count when the page loads
+  updateAlertCount();
+
+  
+  setInterval(updateAlertCount, 10000); // Update every 60 seconds (for example)
+</script>

@@ -1,11 +1,14 @@
+import os
+import sqlite3
 from SafeCity import app
-from flask import render_template , redirect , url_for , flash
+from flask import render_template ,redirect , url_for , flash ,g
 from SafeCity import db
 #when added a table in db u should add his import here too
 from SafeCity.models import User , Snapshots , Camera
 from SafeCity.forms import RegisterForm , LoginForm
-from flask_login import login_user , logout_user , login_required
+from flask_login import login_user , logout_user , login_required , current_user
 
+from flask import jsonify
 
 
 @app.route("/signin", methods=['POST','GET'])
@@ -28,27 +31,31 @@ def login():
 
     return render_template("signin.html", form=form)
 
-@app.route('/logout')
-def logout_page():
-    logout_user()
-    flash("You have been logged out!", category='info')
-    return redirect(url_for("/"))
-
-
 
 
 @app.route("/home")
 def home():
+    alerts_count = len(Snapshots.query.all())
     return render_template("home.html")
 
 @app.route("/admin")
 def admin():
+    alerts_count = len(Snapshots.query.all())
     return render_template("admin.html")
 
 @app.route("/alerts")
+@login_required
 def snapshot():
-    snaps=Snapshots.query.all()
-    return render_template("alerts.html",snaps = snaps )
+    if current_user.username == "admin":
+        # If the current user is admin, fetch all alerts
+        alerts_count = len(Snapshots.query.all())
+        snaps = Snapshots.query.all()
+       
+        return render_template("alerts.html",snaps = snaps)
+    else:
+         snaps=Snapshots.query.filter_by(Alert_sentTo=current_user.username)
+         return render_template("alerts.html",snaps = snaps )
+   
 
 
 
@@ -86,6 +93,16 @@ def analysis():
 
 
 
+@app.route("/get_alert_count")
+@login_required
+def get_alert_count():
+    if current_user.username == "admin":
+        # If the current user is admin, fetch all alerts
+        alerts_count = len(Snapshots.query.all())
+    else:
+        alerts_count = Snapshots.query.filter_by(Alert_sentTo=current_user.username).count()
+    return jsonify(alertCount=alerts_count)
+
 
 # @app.route('/', methods=['GET', 'POST'])
 # def default():
@@ -106,4 +123,3 @@ def analysis():
 # @app.route('/webapp')
 # def webapp():
 #     return Response(generate_frames_web(path_x=0), mimetype='multipart/x-mixed-replace; boundary=frame')
-#

@@ -46,6 +46,7 @@
       <tbody id="myTable">
           <!-- Your rows inside the table HERE: -->
           {% for snap in snaps %}
+          
               <tr>
                 <!--  <td>{{ snap.Detection_img_ref }}</td>   -->
                   <td class="w-25"><img class="rounded mx-auto d-block" src='../static/used_images/alerts_images/{{snap.Detection_img_ref}}'/></td>  
@@ -134,6 +135,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
             input.style.width = `${input.getAttribute('placeholder').length + 3}ch`; // Adjusting width based on placeholder length
         });
     });
+
+
+
 
     </script>
 
