@@ -1,14 +1,12 @@
 import os
 import sqlite3
 from SafeCity import app
-from flask import render_template ,redirect , url_for , flash ,g
+from flask import render_template ,redirect , url_for , flash ,jsonify
 from SafeCity import db
 #when added a table in db u should add his import here too
 from SafeCity.models import User , Snapshots , Camera
 from SafeCity.forms import RegisterForm , LoginForm
 from flask_login import login_user , logout_user , login_required , current_user
-
-from flask import jsonify
 
 
 @app.route("/signin", methods=['POST','GET'])
@@ -34,11 +32,13 @@ def login():
 
 
 @app.route("/home")
+@login_required
 def home():
     alerts_count = len(Snapshots.query.all())
     return render_template("home.html")
 
 @app.route("/admin")
+@login_required
 def admin():
     alerts_count = len(Snapshots.query.all())
     return render_template("admin.html")
@@ -60,6 +60,7 @@ def snapshot():
 
 
 @app.route("/signup" , methods=['POST','GET'])
+@login_required
 def signup():
     form = RegisterForm()
     if form.validate_on_submit():
@@ -83,16 +84,17 @@ def signup():
 
 
 @app.route("/livestream")
+@login_required
 def live():
     return render_template("livestream.html")
 
 @app.route("/analytics")
-
+@login_required
 def analysis():
     return render_template("analytics.html")
 
 
-
+#alert_count
 @app.route("/get_alert_count")
 @login_required
 def get_alert_count():
@@ -102,6 +104,16 @@ def get_alert_count():
     else:
         alerts_count = Snapshots.query.filter_by(Alert_sentTo=current_user.username).count()
     return jsonify(alertCount=alerts_count)
+
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    print( 'bye')
+    logout_user()
+    flash('You have been logged out', category='info')
+    return redirect(url_for('signin'))  # Redirect to the login page
 
 
 # @app.route('/', methods=['GET', 'POST'])
