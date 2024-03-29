@@ -1,7 +1,7 @@
 import os
 import sqlite3
 from SafeCity import app
-from flask import render_template ,redirect , url_for , flash ,jsonify
+from flask import render_template ,redirect , url_for , flash ,jsonify , request
 from SafeCity import db
 #when added a table in db u should add his import here too
 from SafeCity.models import User , Snapshots , Camera
@@ -115,6 +115,26 @@ def logout():
     flash('You have been logged out', category='info')
     return redirect(url_for('signin'))  # Redirect to the login page
 
+# Function to send notifications
+def send_notification(message):
+    # Implement your notification logic here
+    # This could be sending an email, push notification, or any other method
+    print(f"Notification sent: {message}")
+
+# Endpoint to handle notifications
+@app.route("/notify", methods=["POST"])
+def notify():
+    # Check if the alerts table has increased in row count
+    previous_row_count = app.config.get("previous_row_count", 0)
+    current_row_count = Snapshots.query.count()
+
+    if current_row_count > previous_row_count:
+        # Trigger notification if row count has increased
+        send_notification("New alerts have been added to the database!")
+        # Update the previous_row_count in the app config
+        app.config["previous_row_count"] = current_row_count
+
+    return jsonify({"message": "Notification check complete"}), 200
 
 # @app.route('/', methods=['GET', 'POST'])
 # def default():
