@@ -10,6 +10,8 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="{{ url_for('static', filename='/js/db.js') }}"></script>
+
 
 
 <style>
@@ -19,9 +21,9 @@
 </style>
 
 <div style="display: flex; align-items: center;">
-    <input class="form-control" id="myInput" type="text" placeholder="Search by Detection type (Weapon - Fire - Accident - Crowd)" style="margin-right: 15px;">
-    <input class="form-control" id="myInput2" type="text" placeholder="Search by Location" style="margin-right: 15px;">
-    <input class="form-control" id="myInput3" type="text" placeholder="Search by Receiver " style="margin-right: 15px;">
+    <input class="form-control" id="Det" type="text" placeholder="Search by Detection type (Weapon - Fire - Accident - Crowd)" style="margin-right: 15px;">
+    <input class="form-control" id="loc" type="text" placeholder="Search by Location" style="margin-right: 15px;">
+    <input class="form-control" id="user_rec" type="text" placeholder="Search by Receiver " style="margin-right: 15px;">
     <label for="start-date" style="width: 6% ;">  <strong>Start Date: </strong> </label>
     <input class="form-control"  type="date" id="start-date" style="margin-right: 15px;">
     <label for="end-date" style="width: 5% ;"> <strong>End Date:  </strong> </label>
@@ -63,83 +65,6 @@
   </table>
 
 
-<script>
-
-    /*show recent detection */
-$(function(){
-    $("tbody").each(function(elem,index){
-      var arr = $.makeArray($("tr",this).detach());
-      arr.reverse();
-        $(this).append(arr);
-    });
-});
-/**/
-
-/*  filter the whole table */
-    $(document).ready(function(){
-      $("#myInput").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#myTable tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
-    });
-
-    $(document).ready(function(){
-      $("#myInput2").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#myTable tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
-    });
-
-    $(document).ready(function(){
-      $("#myInput3").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#myTable tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
-    });
-/*  filter the whole table */
-
-
-/*  filter date */
-
-function filterTable() {
-  var startDate = new Date(document.getElementById('start-date').value);
-  var endDate = new Date(document.getElementById('end-date').value);
-  var table = document.getElementById('Alerts_table');
-  var rows = table.getElementsByTagName('tr');
-
-  for (var i = 0; i < rows.length; i++) {
-    var cells = rows[i].getElementsByTagName('td');
-    if (cells.length > 4) { // Checking if there's a cell in the fifth column (index 4)
-      var dateStr = cells[4].textContent || cells[4].innerText;
-      var date = new Date(dateStr);
-
-      // Check if the date is valid and falls within the range
-      if (!isNaN(date.getTime()) && date >= startDate && date <= endDate) {
-        rows[i].style.display = '';
-      } else {
-        rows[i].style.display = 'none';
-      }
-    }
-  }
-}
-
-window.addEventListener('DOMContentLoaded', (event) => {
-        const inputs = document.querySelectorAll('.form-control');
-        inputs.forEach(input => {
-            input.style.width = `${input.getAttribute('placeholder').length + 3}ch`; // Adjusting width based on placeholder length
-        });
-    });
-
-
-
-
-    </script>
 
 
 

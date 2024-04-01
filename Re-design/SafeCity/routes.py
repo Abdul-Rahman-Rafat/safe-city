@@ -136,6 +136,8 @@ def notify():
 
     return jsonify({"message": "Notification check complete"}), 200
 
+
+
 # @app.route('/', methods=['GET', 'POST'])
 # def default():
 #     session.clear()
@@ -155,3 +157,10 @@ def notify():
 # @app.route('/webapp')
 # def webapp():
 #     return Response(generate_frames_web(path_x=0), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/users', methods=['GET', 'POST'])
+@login_required
+def admin_users():
+    users = User.query.all()
+    return render_template('users.html', users=users)
+
