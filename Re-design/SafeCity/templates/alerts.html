@@ -28,7 +28,7 @@
     <input class="form-control"  type="date" id="start-date" style="margin-right: 15px;">
     <label for="end-date" style="width: 5% ;"> <strong>End Date:  </strong> </label>
     <input class="form-control"  type="date" id="end-date" style="margin-right: 70px;">
-    <button onclick="filterTable()" class="btn btn-primary btn-lg" style="width: 10% ;">Filter by date</button>
+    <button onclick="filterTable()" class="btn btn-primary btn-lg" style="width: 12% ;">Filter by date</button>
 </div>
 
 <br>
@@ -56,8 +56,10 @@
                   <td>{{ snap.Loc }}</td>
                   <td>{{ snap.Alert_sentTo }}</td>
                   <td>{{ snap.Time }}</td>
-                  <td>
-                      <button type="button" class="btn btn-primary btn-lg">Show</button>                    
+                  <td style="text-align: center;">
+                      <button type="button" class="btn btn-primary btn-lg">Show</button>     
+                      <button class="btn btn-danger btn-lg">Delete</button>
+               
                   </td>
               </tr>
           {% endfor %}

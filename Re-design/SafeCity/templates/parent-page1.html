@@ -175,20 +175,4 @@
   </body>
 </html>
 
-<script>
-  // Function to fetch the number of alerts and update the count
-  function updateAlertCount() {
-    fetch('/get_alert_count')
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById('alertCount').textContent = data.alertCount;
-      })
-      .catch(error => console.error('Error fetching alert count:', error));
-  }
 
-  // Call updateAlertCount function initially to update the count when the page loads
-  updateAlertCount();
-
-  
-  setInterval(updateAlertCount, 500); // refresh every 1 sec 
-</script>
