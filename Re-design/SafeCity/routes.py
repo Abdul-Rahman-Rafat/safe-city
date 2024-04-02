@@ -41,7 +41,8 @@ def home():
 @login_required
 def admin():
     alerts_count = len(Snapshots.query.all())
-    return render_template("admin.html")
+    users = User.query.all()
+    return render_template("admin.html", users=users)
 
 @app.route("/alerts")
 @login_required
