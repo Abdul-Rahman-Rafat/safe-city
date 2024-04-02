@@ -58,6 +58,16 @@ def snapshot():
          return render_template("alerts.html",snaps = snaps )
    
 
+@app.route("/delete_snapshot/<int:snapshot_id>", methods=['DELETE'])
+@login_required
+def delete_snapshot(snapshot_id):
+    snapshot = Snapshots.query.get_or_404(snapshot_id)
+    db.session.delete(snapshot)
+    db.session.commit()
+    return jsonify({'message': 'Snapshot deleted successfully'})
+
+
+
 
 
 @app.route("/signup" , methods=['POST','GET'])

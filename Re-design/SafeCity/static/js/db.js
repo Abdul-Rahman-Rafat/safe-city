@@ -111,24 +111,6 @@ $(document).ready(function(){
 
 
 
- // Function to fetch the number of alerts and update the count
- function updateAlertCount() {
-  fetch('/get_alert_count')
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById('alertCount').textContent = data.alertCount;
-    })
-    .catch(error => console.error('Error fetching alert count:', error));
-}
-
-// Call updateAlertCount function initially to update the count when the page loads
-updateAlertCount();
-
-
-setInterval(updateAlertCount, 500); // refresh every 1 sec 
-
-
-
 function deleteUser(userId) {
   if (confirm("Are you sure you want to delete this user?")) {
       $.ajax({
@@ -142,3 +124,15 @@ function deleteUser(userId) {
   }
 }
 
+function deleteSnapshot(snapshotId) {
+  if (confirm("Are you sure you want to delete this snapshot?")) {
+      $.ajax({
+          url: '/delete_snapshot/' + snapshotId,
+          type: 'DELETE',
+          success: function(result) {
+              // Refresh the page or remove the deleted row from the table
+              location.reload(); // Refreshes the page
+          }
+      });
+  }
+}

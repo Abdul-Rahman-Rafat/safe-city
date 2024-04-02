@@ -77,7 +77,7 @@
        {% if current_user.username=='admin' %}
       <div class="parent-page1-logregbtn">
         <a class="nav-link2"> Welcome, {{ current_user.username }}</a>
-        <a href="signin" class="parent-page1-logout button">Logout</a>
+        <a href="#" id="logoutButton" class="parent-page1-logout button">Logout</a>
         <a href="admin" class="parent-page1-mod button">Modify</a>
 
 
@@ -86,7 +86,7 @@
       
       <div class="parent-page1-logregbtn">
         <a class="nav-link2"> Welcome, {{ current_user.username }}</a>
-        <a href="signin" class="parent-page1-logout button">Logout</a>    
+        <a href="#" id="logoutButton" class="parent-page1-logout button">Logout</a>
       </div>
 
       {% endif %}
@@ -178,3 +178,56 @@
 </html>
 
 
+<script>
+  
+
+ // Function to fetch the number of alerts and update the count
+ function updateAlertCount() {
+  fetch('/get_alert_count')
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('alertCount').textContent = data.alertCount;
+    })
+    .catch(error => console.error('Error fetching alert count:', error));
+}
+
+// Call updateAlertCount function initially to update the count when the page loads
+updateAlertCount();
+
+
+setInterval(updateAlertCount, 500); // refresh every 1 sec 
+
+
+document.addEventListener("DOMContentLoaded", function() {
+  // Add click event listener to the logout button
+  document.getElementById("logoutButton").addEventListener("click", function(event) {
+      event.preventDefault(); // Prevent the default behavior of the link (i.e., navigating to another page)
+
+      // Perform logout action
+      logout();
+  });
+
+  // Function to perform logout action
+  function logout() {
+      // Send an asynchronous request to the logout route
+      fetch("/logout", {
+          method: "GET",
+          headers: {
+              "Content-Type": "application/json"
+          }
+      })
+      .then(response => {
+          // Check if the logout was successful
+          if (response.ok) {
+              // Redirect to the login page
+              window.location.href = "/signin";
+          } else {
+              console.error("Logout failed");
+          }
+      })
+      .catch(error => {
+          console.error("Error during logout:", error);
+      });
+  }
+});
+</script>
