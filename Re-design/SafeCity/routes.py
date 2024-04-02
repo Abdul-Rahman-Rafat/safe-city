@@ -109,7 +109,6 @@ def get_alert_count():
 @app.route("/logout")
 @login_required
 def logout():
-    print( 'bye')
     logout_user()
     flash('You have been logged out', category='info')
     return redirect(url_for('signin'))  # Redirect to the login page

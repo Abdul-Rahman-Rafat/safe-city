@@ -128,6 +128,7 @@ updateAlertCount();
 setInterval(updateAlertCount, 500); // refresh every 1 sec 
 
 
+
 function deleteUser(userId) {
   if (confirm("Are you sure you want to delete this user?")) {
       $.ajax({
@@ -140,3 +141,4 @@ function deleteUser(userId) {
       });
   }
 }
+

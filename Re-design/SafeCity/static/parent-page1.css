@@ -204,6 +204,8 @@
   flex-direction: row;
   justify-content: space-between;
 }
+
+
 .parent-page1-logout {
   color: #ffffff;
   width:50%;
@@ -223,6 +225,31 @@
   animation:  pulse 2s infinite;
   background-color: var(--dl-color-gray-white);
 }
+
+
+.parent-page1-mod {
+  color: white;
+  width:50%;
+  font-size: 18px;
+  transition: 0.3s;
+  border-width: 0px;
+  margin-right: var(--dl-space-space-twounits);
+  border-radius: 32px;
+  text-decoration: none;
+  background-color: burlywood;
+  text-align:center;
+  font-weight: bold;
+}
+.parent-page1-mod:hover {
+  color: burlywood;
+  cursor: pointer;
+  animation:  pulse 2s infinite;
+  background-color: white;
+}
+
+
+
+
 .parent-page1-register {
   color: #ffffff;
   width:50%;
