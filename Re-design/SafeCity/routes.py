@@ -106,8 +106,6 @@ def get_alert_count():
         alerts_count = Snapshots.query.filter_by(Alert_sentTo=current_user.username).count()
     return jsonify(alertCount=alerts_count)
 
-
-
 @app.route("/logout")
 @login_required
 def logout():
@@ -115,28 +113,6 @@ def logout():
     logout_user()
     flash('You have been logged out', category='info')
     return redirect(url_for('signin'))  # Redirect to the login page
-
-# Function to send notifications
-def send_notification(message):
-    # Implement your notification logic here
-    # This could be sending an email, push notification, or any other method
-    print(f"Notification sent: {message}")
-
-# Endpoint to handle notifications
-@app.route("/notify", methods=["POST"])
-def notify():
-    # Check if the alerts table has increased in row count
-    previous_row_count = app.config.get("previous_row_count", 0)
-    current_row_count = Snapshots.query.count()
-
-    if current_row_count > previous_row_count:
-        # Trigger notification if row count has increased
-        send_notification("New alerts have been added to the database!")
-        # Update the previous_row_count in the app config
-        app.config["previous_row_count"] = current_row_count
-
-    return jsonify({"message": "Notification check complete"}), 200
-
 
 
 # @app.route('/', methods=['GET', 'POST'])
@@ -159,9 +135,20 @@ def notify():
 # def webapp():
 #     return Response(generate_frames_web(path_x=0), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route('/users', methods=['GET', 'POST'])
+@app.route("/delete_user/<int:user_id>", methods=['DELETE'])
 @login_required
-def admin_users():
-    users = User.query.all()
-    return render_template('users.html', users=users)
-
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    
+    # Delete associated rows from Snapshots table
+    snapshots_to_delete = Snapshots.query.filter_by(owned_user=user).all()
+    for snapshot in snapshots_to_delete:
+        db.session.delete(snapshot)
+    
+    # Delete the user
+    db.session.delete(user)
+    
+    # Commit changes to the database
+    db.session.commit()
+    
+    return jsonify({'message': 'User and associated snapshots deleted successfully'})

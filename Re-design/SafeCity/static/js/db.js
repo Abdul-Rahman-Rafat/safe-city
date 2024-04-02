@@ -128,3 +128,15 @@ updateAlertCount();
 setInterval(updateAlertCount, 500); // refresh every 1 sec 
 
 
+function deleteUser(userId) {
+  if (confirm("Are you sure you want to delete this user?")) {
+      $.ajax({
+          url: '/delete_user/' + userId,
+          type: 'DELETE',
+          success: function(result) {
+              // Refresh the page or remove the deleted row from the table
+              location.reload(); // Refreshes the page
+          }
+      });
+  }
+}
