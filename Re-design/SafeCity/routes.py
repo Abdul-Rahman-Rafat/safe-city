@@ -1,7 +1,7 @@
 import os
 import sqlite3
 from SafeCity import app
-from flask import render_template ,redirect , url_for , flash ,jsonify , request
+from flask import render_template ,redirect , url_for , flash ,jsonify , request ,abort
 from SafeCity import db
 #when added a table in db u should add his import here too
 from SafeCity.models import User , Snapshots , Camera
@@ -37,12 +37,17 @@ def home():
     alerts_count = len(Snapshots.query.all())
     return render_template("home.html")
 
+
 @app.route("/admin")
 @login_required
 def admin():
-    alerts_count = len(Snapshots.query.all())
-    users = User.query.all()
-    return render_template("admin.html", users=users)
+    if current_user.username == 'admin':
+        alerts_count = len(Snapshots.query.all())
+        users = User.query.all()
+        return render_template("admin.html", users=users)
+
+    else:
+        abort(403)
 
 @app.route("/alerts")
 @login_required
@@ -73,25 +78,27 @@ def delete_snapshot(snapshot_id):
 @app.route("/signup" , methods=['POST','GET'])
 @login_required
 def signup():
-    form = RegisterForm()
-    if form.validate_on_submit():
-        user_to_create = User(username=form.username.data,
-                              password=form.password.data,
-                              location=form.location.data
-                              )
-        db.session.add(user_to_create)
-        db.session.commit()
-        flash(f'A user was added successfully ', category='success')
-        return redirect(url_for('signup'))
+    if current_user.username == 'admin':
+        form = RegisterForm()
+        if form.validate_on_submit():
+            user_to_create = User(username=form.username.data,
+                                password=form.password.data,
+                                location=form.location.data
+                                )
+            db.session.add(user_to_create)
+            db.session.commit()
+            flash(f'A user was added successfully ', category='success')
+            return redirect(url_for('signup'))
 
-    if form.errors != {}: #If there are not errors from the validations
-        for err_msg in form.errors.values():
-            flash(f'There was an error with creating a user: {err_msg}', category='danger')
-    
-    
-    return render_template("signup.html",form=form)
+        if form.errors != {}: #If there are not errors from the validations
+            for err_msg in form.errors.values():
+                flash(f'There was an error with creating a user: {err_msg}', category='danger')
+        
+        
+        return render_template("signup.html",form=form)
 
-
+    else:
+         abort(403)
 
 
 @app.route("/livestream")
@@ -115,13 +122,6 @@ def get_alert_count():
     else:
         alerts_count = Snapshots.query.filter_by(Alert_sentTo=current_user.username).count()
     return jsonify(alertCount=alerts_count)
-
-@app.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    flash('You have been logged out', category='info')
-    return redirect(url_for('signin'))  # Redirect to the login page
 
 
 # @app.route('/', methods=['GET', 'POST'])
