@@ -26,3 +26,16 @@ class LoginForm(FlaskForm):
     username = StringField(label='Username' , validators=[Length(min=3,max=20),DataRequired()])  
     password = PasswordField(label='Password' , validators=[Length(max=20),DataRequired()]) 
     submit = SubmitField(label='Sign in')
+
+
+
+class EditUserForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    location = StringField('Location', validators=[DataRequired()])
+    password = PasswordField('Password' , validators=[Length(max=20),DataRequired()]) 
+    camera_id = StringField('Camera ID')
+    submit = SubmitField('Save')
+
+class UpdatePasswordForm(FlaskForm):
+    password = PasswordField('New Password', validators=[DataRequired()])
+    submit = SubmitField('Update Password')

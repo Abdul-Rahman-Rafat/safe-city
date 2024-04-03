@@ -1,52 +1,43 @@
-{%  extends 'parent-page1.html' %}
+{% extends 'parent-page1.html' %}
+{% block title %}
+    Admin
+{% endblock %}
+{% block content %}
+    <link rel="stylesheet" href="../static/users.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='/js/db.js') }}"></script>
 
-      {%  block title %}
-           Admin
-      {%  endblock %}
+    <div style="display: flex; align-items: center;">
+        <input class="form-control" id="user_rec" type="text" placeholder="Search by User" style="margin-right: 15px; width: 21ch;">
+        <input class="form-control" id="loc" type="text" placeholder="Search by Location" style="margin-right: 15px; width: 21ch;">
+    </div>
+    <br> <br>
 
-        {%  block content %}
-
-
-        <link rel="stylesheet" href="../static/users.css" />
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-        <script src="{{ url_for('static', filename='/js/db.js') }}"></script>
-     
-        <div style="display: flex; align-items: center;">
-          <input class="form-control" id="user_rec" type="text" placeholder="Search by User " style="margin-right: 15px; width: 21ch;">
-          <input class="form-control" id="loc" type="text" placeholder="Search by Location" style="margin-right: 15px; width: 21ch;">
-        </div>
-        <br> <br>
-        
-        <table class="table table-hover table-dark">
-          <thead>
+    <table class="table table-hover table-dark">
+        <thead>
             <tr>
-              <th>Username</th>
-              <th>Location</th>
-              <th>Camera id</th>
-              <th>Actions</th>
+                <th>Username</th>
+                <th>Password</th>
+                <th>Location</th>
+                <th>Camera id</th>
+                <th>Actions</th>
             </tr>
-          </thead>
-          <tbody   id="myTable2" >
+        </thead>
+        <tbody id="myTable2">
             {% for user in users %}
-              <tr>
+            <tr>
                 <td>{{ user.username }}</td>
+                <td>{{ user.password }}</td>
                 <td>{{ user.location }}</td>
-                <td>  <!-- camera id-->                 </td>
+                <td>{{ user.camera_id }}</td>
                 <td>
-                  <button class="btn btn-primary btn-lg">Edit</button>
-                  <button class="btn btn-danger btn-lg" onclick="deleteUser('{{ user.id }}')">Delete</button>
+                    <a href="{{ url_for('edit_user', user_id=user.id) }}" class="btn btn-warning btn-lg">Edit</a>
+                    <button class="btn btn-danger btn-lg" onclick="deleteUser('{{ user.id }}')">Delete</button>
                 </td>
-              </tr>
+            </tr>
             {% endfor %}
-          </tbody>
-        </table>
-        <a href="{{ url_for('signup') }}" class="btn btn-success">Add User</a>
-        
- 
-
-        {%  endblock %}
-
-
-
- 
+        </tbody>
+    </table>
+    <a href="{{ url_for('signup') }}" class="btn btn-success">Add User</a>
+{% endblock %}

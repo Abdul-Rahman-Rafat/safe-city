@@ -5,7 +5,7 @@ from flask import render_template ,redirect , url_for , flash ,jsonify , request
 from SafeCity import db
 #when added a table in db u should add his import here too
 from SafeCity.models import User , Snapshots , Camera
-from SafeCity.forms import RegisterForm , LoginForm
+from SafeCity.forms import RegisterForm , LoginForm ,EditUserForm ,UpdatePasswordForm
 from flask_login import login_user , logout_user , login_required , current_user
 
 
@@ -124,6 +124,58 @@ def get_alert_count():
     return jsonify(alertCount=alerts_count)
 
 
+@app.route("/delete_user/<int:user_id>", methods=['DELETE'])
+@login_required
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    
+    # Delete associated rows from Snapshots table
+    snapshots_to_delete = Snapshots.query.filter_by(owned_user=user).all()
+    for snapshot in snapshots_to_delete:
+        db.session.delete(snapshot)
+    
+    # Delete the user
+    db.session.delete(user)
+    
+    # Commit changes to the database
+    db.session.commit()
+    
+    return jsonify({'message': 'User and associated snapshots deleted successfully'})
+
+@app.route("/edit_user/<int:user_id>", methods=['GET', 'POST'])
+@login_required
+def edit_user(user_id):
+    if current_user.username != "admin":
+        flash('You do not have permission to access this page.', category='danger')
+        return redirect(url_for('home'))
+    
+    user = User.query.get_or_404(user_id)
+    form = EditUserForm(obj=user)
+    if form.validate_on_submit():
+        form.populate_obj(user)
+        db.session.commit()
+        flash('User information updated successfully.', category='success')
+        return redirect(url_for('admin'))
+    
+    return render_template('edit_user.html', form=form, user=user)
+
+@app.route("/update_password", methods=['GET', 'POST'])
+@login_required
+def update_password():
+    form = UpdatePasswordForm()
+    if form.validate_on_submit():
+        current_user.password = form.password.data
+        db.session.commit()
+        flash('Your password has been updated successfully.', 'success')
+        return redirect(url_for('profile'))  # Redirect to the profile page or any other page
+    return render_template('update_password.html', form=form)
+
+
+
+
+
+
+
 # @app.route('/', methods=['GET', 'POST'])
 # def default():
 #     session.clear()
@@ -143,21 +195,3 @@ def get_alert_count():
 # @app.route('/webapp')
 # def webapp():
 #     return Response(generate_frames_web(path_x=0), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-@app.route("/delete_user/<int:user_id>", methods=['DELETE'])
-@login_required
-def delete_user(user_id):
-    user = User.query.get_or_404(user_id)
-    
-    # Delete associated rows from Snapshots table
-    snapshots_to_delete = Snapshots.query.filter_by(owned_user=user).all()
-    for snapshot in snapshots_to_delete:
-        db.session.delete(snapshot)
-    
-    # Delete the user
-    db.session.delete(user)
-    
-    # Commit changes to the database
-    db.session.commit()
-    
-    return jsonify({'message': 'User and associated snapshots deleted successfully'})
