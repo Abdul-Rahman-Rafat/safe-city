@@ -3,20 +3,20 @@
     Admin
 {% endblock %}
 {% block content %}
-    <link rel="stylesheet" href="../static/users.css" />
+    <link rel="stylesheet" href="../static/admin.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="{{ url_for('static', filename='/js/db.js') }}"></script>
-
-
-
     
     <div  class="navbar navbar-expand-lg navbar-light bg-dark" style=" align-items: center; width: 95%; border-radius: 16px; padding-top: 30px ; padding-bottom: 30px;">
-        <input class="form-control" id="user_rec" type="text" placeholder="Search by User" >
-        <input class="form-control" id="loc" type="text" placeholder="Search by Location" >
+        <input class="form-control" id="user_rec" type="text" placeholder="Search by user                                   " style="margin-right: 15%; margin-left: 15%;">
+        <input class="form-control" id="loc" type="text" placeholder="Search by location                                    " style="margin-right: 15%;">
     </div>
     <br> <br>
 
+
+    <a href="{{ url_for('signup') }}" class="btn btn-success" style="width: 30%; padding-top: 10px ; padding-bottom: 10px; font-size: x-large;">Add User</a>
+    <br>
     <table class="table table-hover table-dark">
         <thead>
             <tr>
@@ -42,5 +42,5 @@
             {% endfor %}
         </tbody>
     </table>
-    <a href="{{ url_for('signup') }}" class="btn btn-success">Add User</a>
+    
 {% endblock %}
