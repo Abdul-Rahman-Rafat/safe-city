@@ -104,7 +104,7 @@ def signup():
 @app.route("/livestream")
 @login_required
 def live():
-    return render_template("livestream.html")
+    return render_template(url_for('livestream.html'))
 
 @app.route("/analytics")
 @login_required
@@ -142,33 +142,6 @@ def delete_user(user_id):
     
     return jsonify({'message': 'User and associated snapshots deleted successfully'})
 
-@app.route("/edit_user/<int:user_id>", methods=['GET', 'POST'])
-@login_required
-def edit_user(user_id):
-    if current_user.username != "admin":
-        flash('You do not have permission to access this page.', category='danger')
-        return redirect(url_for('home'))
-    
-    user = User.query.get_or_404(user_id)
-    form = EditUserForm(obj=user)
-    if form.validate_on_submit():
-        form.populate_obj(user)
-        db.session.commit()
-        flash('User information updated successfully.', category='success')
-        return redirect(url_for('admin'))
-    
-    return render_template('edit_user.html', form=form, user=user)
-
-@app.route("/update_password", methods=['GET', 'POST'])
-@login_required
-def update_password():
-    form = UpdatePasswordForm()
-    if form.validate_on_submit():
-        current_user.password = form.password.data
-        db.session.commit()
-        flash('Your password has been updated successfully.', 'success')
-        return redirect(url_for('profile'))  # Redirect to the profile page or any other page
-    return render_template('update_password.html', form=form)
 
 
 
