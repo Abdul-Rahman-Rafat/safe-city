@@ -104,7 +104,7 @@ def signup():
 @app.route("/livestream")
 @login_required
 def live():
-    return render_template(url_for('livestream.html'))
+    return render_template('livestream.html')
 
 @app.route("/analytics")
 @login_required
