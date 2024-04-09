@@ -35,7 +35,7 @@
                 <td>{{ user.location }}</td>
                 <td>{{ user.camera_id }}</td>
                 <td>
-                    <a href="edit_user" class="btn btn-warning btn-lg">Edit</a>
+                  <!-- <a href="{{ url_for('edit_user', user_id=user.id) }}" class="btn btn-warning btn-lg">Edit</a>  --> 
                     <button class="btn btn-danger btn-lg" onclick="deleteUser('{{ user.id }}')">Delete</button>
                 </td>
             </tr>

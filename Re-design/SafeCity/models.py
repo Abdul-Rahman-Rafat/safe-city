@@ -49,8 +49,6 @@ class Snapshots(db.Model):
 class Camera(db.Model,UserMixin):
     camera_id = db.Column(db.Integer(), primary_key=True)
     limit_crowd = db.Column(db.Integer(), nullable=False)
-    Alert_sentTo = db.Column(db.String(length=50), db.ForeignKey('user.username'), nullable=False)
-
 
 
 

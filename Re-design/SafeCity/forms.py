@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField , SelectMultipleField,ValidationError
+from wtforms import StringField, PasswordField, SubmitField , BooleanField,ValidationError
 from wtforms.validators import Length , DataRequired
 from SafeCity.models import User ,  Camera
 
@@ -16,7 +16,7 @@ class RegisterForm(FlaskForm):
     username = StringField(label='Username' , validators=[Length(min=3,max=20),DataRequired()])  
     password = PasswordField(label='Password' , validators=[Length(max=20),DataRequired()]) 
     location = StringField(label='Location', validators=[DataRequired()])  
-    camera_id = SelectMultipleField(label='Camera ID', coerce=int)  # Allows multiple camera selections
+    #camera_id = BooleanField(label='CameraID',validators=[DataRequired()])
     submit = SubmitField(label='Sign up')
 
 
