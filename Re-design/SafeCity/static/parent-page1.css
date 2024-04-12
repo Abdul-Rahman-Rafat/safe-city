@@ -208,7 +208,7 @@
 
 .parent-page1-logout {
   color: #ffffff;
-  width:50%;
+  width:100%;
   font-size: 18px;
   transition: 0.3s;
   border-width: 0px;
@@ -277,7 +277,6 @@
   font-size: 18px;
   transition: 0.3s;
   border-width: 0px;
-  margin-right: var(--dl-space-space-twounits);
   border-radius: 32px;
   text-decoration: none;
   text-align:center;

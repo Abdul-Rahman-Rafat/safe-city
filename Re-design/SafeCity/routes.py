@@ -145,6 +145,13 @@ def delete_user(user_id):
 
 
 
+@app.route("/logout", methods=['POST'])
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out', category='success')
+    return redirect('signin')
+
 
 
 
