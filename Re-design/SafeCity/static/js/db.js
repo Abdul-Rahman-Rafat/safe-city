@@ -46,7 +46,6 @@ $(document).ready(function(){
 });
 
 
-/*  filter date */
 
 function filterTable() {
   var startDate = new Date(document.getElementById('start-date').value);
@@ -69,6 +68,14 @@ function filterTable() {
     }
   }
 }
+
+window.addEventListener('DOMContentLoaded', (event) => {
+  const inputs = document.querySelectorAll('.form-control');
+  inputs.forEach(input => {
+    input.style.width = `${input.getAttribute('placeholder').length + 3}ch`; // Adjusting width based on placeholder length
+  });
+});
+
 
 window.addEventListener('DOMContentLoaded', (event) => {
         const inputs = document.querySelectorAll('.form-control');
