@@ -28,7 +28,6 @@ $(document).ready(function(){
     var value = $(this).val().toLowerCase();
     // Filter the entire table based on the "location" column
     $("#myTable tr").filter(function() {
-      // Use $(this).children("td:first-child") to target the first column (index 0) which corresponds to the "Username" column
       $(this).toggle($(this).children("td:nth-child(3)").text().toLowerCase().indexOf(value) > -1);
     });
   });
@@ -37,9 +36,7 @@ $(document).ready(function(){
 $(document).ready(function(){
   $("#user_rec").on("keyup", function() {
     var value = $(this).val().toLowerCase();
-    // Filter the entire table based on the "Username" column
     $("#myTable tr").filter(function() {
-      // Use $(this).children("td:first-child") to target the first column (index 0) which corresponds to the "Username" column
       $(this).toggle($(this).children("td:nth-child(4)").text().toLowerCase().indexOf(value) > -1);
     });
   });
