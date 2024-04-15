@@ -16,6 +16,7 @@ class User(db.Model,UserMixin):
     username = db.Column(db.String(length=50), nullable=False, unique=True)
     password_hash = db.Column(db.String(length=60), nullable=False)
     location = db.Column(db.String(length=60), nullable=False)
+    e_mail = db.Column(db.String(length=50), nullable=False, unique=True)
     camera_id = db.Column(db.Integer()) #unique=True or False ?
     
     #relationship between User and Snapshots

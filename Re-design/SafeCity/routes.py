@@ -83,7 +83,8 @@ def signup():
         if form.validate_on_submit():
             user_to_create = User(username=form.username.data,
                                 password=form.password.data,
-                                location=form.location.data
+                                location=form.location.data ,
+                                e_mail=form.e_mail.data
                                 )
             db.session.add(user_to_create)
             db.session.commit()
