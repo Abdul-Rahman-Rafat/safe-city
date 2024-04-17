@@ -154,6 +154,10 @@ def logout():
     return redirect('signin')
 
 
+@app.route("/edit_user")
+@login_required
+def edit():
+    return render_template('edit_user.html')
 
 
 

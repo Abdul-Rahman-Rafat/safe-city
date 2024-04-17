@@ -23,7 +23,9 @@
 <div class="navbar shadow-lg navbar-dark bg-dark" style="display: flex; align-items: center; width: 95%; border-radius: 16px; padding-top: 30px ; padding-bottom: 30px;">
     <input class="form-control" id="Det" type="text" placeholder="Search by Detection type (Weapon - Fire - Accident - Crowd)" style="margin-right: 15px; margin-left: 15px;">
     <input class="form-control" id="loc" type="text" placeholder="Search by Location" style="margin-right: 15px;">
+    {% if current_user.username == "admin" %}
     <input class="form-control" id="user_rec" type="text" placeholder="Search by Receiver " style="margin-right: 15px;">
+    {% endif %}
     <label for="start-date" style=" color:white;">  <strong>Start Date: </strong> </label>
     <input class="form-control"  type="date" id="start-date" >
     <label for="end-date"  style="color: white;"> <strong>End Date:  </strong> </label>
@@ -40,7 +42,9 @@
               <th scope="col"> Snapshot </th>
               <th scope="col">Detection</th>
               <th scope="col">Location</th>
+              {% if current_user.username == "admin" %}
               <th scope="col">Alert sent to </th>
+              {% endif %}
               <th scope="col">Time</th>
               <th scope="col">  <!-- for button --></th>
           </tr>
@@ -54,7 +58,9 @@
                   <td class="w-25"><img class="rounded mx-auto d-block" src='../static/used_images/alerts_images/{{snap.Detection_img_ref}}'/></td>  
                   <td>{{ snap.Detection_type }}</td>
                   <td>{{ snap.Loc }}</td>
+                    {% if current_user.username == "admin" %}
                   <td>{{ snap.Alert_sentTo }}</td>
+                    {% endif%}
                   <td>{{ snap.Time }}</td>
                   <td style="text-align: center;">
                       <button hidden type="button" class="btn btn-primary btn-lg">Show</button>     
