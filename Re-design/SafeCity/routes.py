@@ -193,21 +193,16 @@ def update(id):
 		name_to_update.username = request.form['username']
 		try:
 			db.session.commit()
-			flash("User Updated Successfully!")
-			return render_template("update.html", 
-				form=form,
-				name_to_update = name_to_update, id=id)
+			flash("User Updated Successfully!",category='success')
+			return render_template("update.html", form=form,name_to_update = name_to_update, id=id)
 		except:
-			flash("Error!  Looks like there was a problem...try again!")
-			return render_template("update.html", 
-				form=form,
-				name_to_update = name_to_update,
-				id=id)
+			flash("Error!  Looks like there was a problem...try again!" , category='danger')
+			return render_template("update.html", form=form,name_to_update = name_to_update,id=id)
 	else:
-		return render_template("update.html", 
-				form=form,
-				name_to_update = name_to_update,
-				id = id)
+		return render_template("update.html", form=form,name_to_update = name_to_update,id = id)
+     
+     
+    
 
 
 
