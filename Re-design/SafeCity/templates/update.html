@@ -23,7 +23,11 @@
 
     <h1>Update User</h1>
 	<br/>
-<div class="shadow p-5 mb-7 bg-body rounded">
+<div class="shadow p-5 mb-7  rounded" style="
+width: 496px;
+height: 696px;
+text-align: center;
+font-weight: bold;">
 	<form action="/update/{{ name_to_update.id }}" method="POST">
 		{{ form.hidden_tag() }}
 
@@ -51,7 +55,7 @@
 		<br/>
 
 
-		{{ form.submit(class="btn btn-success btn-lg btn-block" , value="Save" ) }}
+		{{ form.submit(class="btn btn-success btn-lg btn-block" , value="Save" , style="" ) }}
 
 	</form>
 </div>
