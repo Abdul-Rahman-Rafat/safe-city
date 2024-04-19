@@ -187,9 +187,10 @@ def update(id):
 	form = RegisterForm()
 	name_to_update = User.query.get_or_404(id)
 	if request.method == "POST":
+		name_to_update.location = request.form['location']
+		name_to_update.e_mail = request.form['e_mail']
+		name_to_update.password = request.form['password']
 		name_to_update.username = request.form['username']
-		name_to_update.e_mail = request.form['email']
-		
 		try:
 			db.session.commit()
 			flash("User Updated Successfully!")

@@ -24,7 +24,7 @@
 
     <h1>Update User...</h1>
 	<br/>
-<div class="shadow p-3 mb-5 bg-body rounded">
+<div class="shadow p-5 mb-7 bg-body rounded">
 	<form action="/update/{{ name_to_update.id }}" method="POST">
 		{{ form.hidden_tag() }}
 
@@ -39,11 +39,19 @@
 
 		{{ form.e_mail(class="form-control", value=name_to_update.e_mail) }}
 		<br/>
-		
-		
 
+		{{ form.password.label(class="form-label") }}
+
+		{{ form.password(class="form-control", value=name_to_update.password) }}
 		<br/>
 		
+
+		{{ form.location.label(class="form-label") }}
+
+		{{ form.location(class="form-control", value=name_to_update.location) }}
+		<br/>
+
+
 		{{ form.submit(class="btn btn-secondary") }}
 
 	</form>
