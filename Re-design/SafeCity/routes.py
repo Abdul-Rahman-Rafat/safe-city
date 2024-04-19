@@ -8,7 +8,16 @@ from SafeCity.models import User , Snapshots , Camera
 from SafeCity.forms import RegisterForm , LoginForm ,EditUserForm ,UpdatePasswordForm
 from flask_login import login_user , logout_user , login_required , current_user
 
-
+previousAlertCount = 0
+def get_flash_alert():
+    global previousAlertCount
+    # Fetch current count of snapshots
+    currentAlertCount = len(Snapshots.query.all())
+    # Check if the current count is greater than the previous count
+    if currentAlertCount > previousAlertCount:
+        flash("New snapshots have been detected!", category="info")
+        previousAlertCount = currentAlertCount
+    
 @app.route("/signin", methods=['POST','GET'])
 @app.route("/", methods=['POST','GET'])
 def login():
@@ -34,6 +43,7 @@ def login():
 @app.route("/home")
 @login_required
 def home():
+    get_flash_alert()    # flash to see the notification
     alerts_count = len(Snapshots.query.all())
     return render_template("home.html")
 
@@ -41,6 +51,7 @@ def home():
 @app.route("/admin")
 @login_required
 def admin():
+    get_flash_alert()    # flash to see the notification
     if current_user.username == 'admin':
         alerts_count = len(Snapshots.query.all())
         users = User.query.all()
@@ -52,6 +63,14 @@ def admin():
 @app.route("/alerts")
 @login_required
 def snapshot():
+
+    get_flash_alert()    # flash to see the notification
+
+
+    # Fetch all alerts
+    snaps = Snapshots.query.all()
+       
+
     if current_user.username == "admin":
         # If the current user is admin, fetch all alerts
         alerts_count = len(Snapshots.query.all())
@@ -78,6 +97,8 @@ def delete_snapshot(snapshot_id):
 @app.route("/signup" , methods=['POST','GET'])
 @login_required
 def signup():
+    get_flash_alert()    # flash to see the notification
+
     if current_user.username == 'admin':
         form = RegisterForm()
         if form.validate_on_submit():
@@ -105,11 +126,13 @@ def signup():
 @app.route("/livestream")
 @login_required
 def live():
+    get_flash_alert()    # flash to see the notification
     return render_template('livestream.html')
 
 @app.route("/analytics")
 @login_required
 def analysis():
+    get_flash_alert()    # flash to see the notification
     return render_template("analytics.html")
 
 
@@ -154,10 +177,23 @@ def logout():
     return redirect('signin')
 
 
+
+
+
+
+
+
+
+
 @app.route("/edit_user")
 @login_required
 def edit():
+    get_flash_alert()    # flash to see the notification
     return render_template('edit_user.html')
+
+
+
+
 
 
 

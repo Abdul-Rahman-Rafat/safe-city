@@ -199,9 +199,6 @@
 
 
 <script>
-  // Variable to store the previous alert count
-  let previousAlertCount = 0;
-
   // Function to fetch the number of alerts and update the count
   function updateAlertCount() {
     fetch('/get_alert_count')
@@ -210,21 +207,10 @@
         const currentAlertCount = data.alertCount;
         document.getElementById('alertCount').textContent = currentAlertCount;
 
-        // Check if the alert count increased
-        if (currentAlertCount > previousAlertCount) {
-          // Show an alert
-          showAlert('New alert', 'There is a new alert!');
-        }
-
         // Update the previous alert count
         previousAlertCount = currentAlertCount;
       })
       .catch(error => console.error('Error fetching alert count:', error));
-  }
-
-  // Function to show an alert
-  function showAlert(title, message) {
-    alert(`${title}\n\n${message}`);
   }
 
   // Call updateAlertCount function initially to update the count when the page loads
@@ -232,5 +218,8 @@
 
   // Set interval to refresh the alert count every 1 second (1000 milliseconds)
   setInterval(updateAlertCount, 1000);
+
+
+  
 </script>
 
