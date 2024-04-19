@@ -5,7 +5,7 @@ from flask import render_template ,redirect , url_for , flash ,jsonify , request
 from SafeCity import db
 #when added a table in db u should add his import here too
 from SafeCity.models import User , Snapshots , Camera
-from SafeCity.forms import RegisterForm , LoginForm ,EditUserForm ,UpdatePasswordForm
+from SafeCity.forms import RegisterForm , LoginForm 
 from flask_login import login_user , logout_user , login_required , current_user
 
 previousAlertCount = 0
@@ -178,20 +178,35 @@ def logout():
 
 
 
+#################
 
-
-
-
-
-
-
-@app.route("/edit_user")
+# Update Database Record
+@app.route('/update/<int:id>', methods=['GET', 'POST'])
 @login_required
-def edit():
-    get_flash_alert()    # flash to see the notification
-    return render_template('edit_user.html')
-
-
+def update(id):
+	form = RegisterForm()
+	name_to_update = User.query.get_or_404(id)
+	if request.method == "POST":
+		name_to_update.username = request.form['username']
+		name_to_update.e_mail = request.form['email']
+		
+		try:
+			db.session.commit()
+			flash("User Updated Successfully!")
+			return render_template("update.html", 
+				form=form,
+				name_to_update = name_to_update, id=id)
+		except:
+			flash("Error!  Looks like there was a problem...try again!")
+			return render_template("update.html", 
+				form=form,
+				name_to_update = name_to_update,
+				id=id)
+	else:
+		return render_template("update.html", 
+				form=form,
+				name_to_update = name_to_update,
+				id = id)
 
 
 

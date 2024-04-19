@@ -1,0 +1,71 @@
+
+{%  extends 'parent-page1.html' %}
+
+      {%  block title %}
+           Update
+      {%  endblock %}
+
+        {%  block content %}
+        <link rel="stylesheet" href="../static/edit_user.css" />
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Edit User</title>
+   
+</head>
+<body>
+
+{% if id == current_user.id  or  current_user.id==1 %}
+
+    <h1>Update User...</h1>
+	<br/>
+<div class="shadow p-3 mb-5 bg-body rounded">
+	<form action="/update/{{ name_to_update.id }}" method="POST">
+		{{ form.hidden_tag() }}
+
+		
+
+		{{ form.username.label(class="form-label") }}
+
+		{{ form.username(class="form-control", value=name_to_update.username) }}
+		<br/>
+
+		{{ form.e_mail.label(class="form-label") }}
+
+		{{ form.e_mail(class="form-control", value=name_to_update.e_mail) }}
+		<br/>
+		
+		
+
+		<br/>
+		
+		{{ form.submit(class="btn btn-secondary") }}
+
+	</form>
+</div>
+<br/><br/><br/>
+
+{% else %}
+ <div class="alert alert-warning alert-dismissible fade show" role="alert">
+	  Sorry! You Can't Edit This User...
+	  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+
+	<h2>Access Denied!</h2>
+	<p>Sorry, you cannot access this user profile...</p>
+
+{% endif %}
+
+
+
+
+</body>
+</html>
+
+
+{%  endblock %}

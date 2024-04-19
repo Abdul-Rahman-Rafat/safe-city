@@ -29,14 +29,3 @@ class LoginForm(FlaskForm):
     submit = SubmitField(label='Sign in')
 
 
-
-class EditUserForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    location = StringField('Location', validators=[DataRequired()])
-    password = PasswordField('Password' , validators=[Length(max=20),DataRequired()]) 
-    camera_id = StringField('Camera ID')
-    submit = SubmitField('Save')
-
-class UpdatePasswordForm(FlaskForm):
-    password = PasswordField('New Password', validators=[DataRequired()])
-    submit = SubmitField('Update Password')
