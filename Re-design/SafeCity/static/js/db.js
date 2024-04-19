@@ -42,8 +42,7 @@ $(document).ready(function(){
   });
 });
 
-
-
+// date filter
 function filterTable() {
   var startDate = new Date(document.getElementById('start-date').value);
   var endDate = new Date(document.getElementById('end-date').value);
@@ -67,21 +66,11 @@ function filterTable() {
 }
 
 window.addEventListener('DOMContentLoaded', (event) => {
-  const inputs = document.querySelectorAll('.form-control');
-  inputs.forEach(input => {
-    input.style.width = `${input.getAttribute('placeholder').length + 3}ch`; // Adjusting width based on placeholder length
-  });
-});
-
-
-window.addEventListener('DOMContentLoaded', (event) => {
         const inputs = document.querySelectorAll('.form-control');
         inputs.forEach(input => {
             input.style.width = `${input.getAttribute('placeholder').length + 3}ch`; // Adjusting width based on placeholder length
         });
     });
-
-
 
 
 /*  filter the users whole table */

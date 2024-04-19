@@ -6,7 +6,6 @@
       {%  endblock %}
 
         {%  block content %}
-        <link rel="stylesheet" href="../static/edit_user.css" />
 
 
 <!DOCTYPE html>
@@ -15,14 +14,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Edit User</title>
+    <title>Update User</title>
    
 </head>
 <body>
 
 {% if id == current_user.id  or  current_user.id==1 %}
 
-    <h1>Update User...</h1>
+    <h1>Update User</h1>
 	<br/>
 <div class="shadow p-5 mb-7 bg-body rounded">
 	<form action="/update/{{ name_to_update.id }}" method="POST">
@@ -52,7 +51,7 @@
 		<br/>
 
 
-		{{ form.submit(class="btn btn-secondary") }}
+		{{ form.submit(class="btn btn-success btn-lg btn-block" , value="Save" ) }}
 
 	</form>
 </div>
