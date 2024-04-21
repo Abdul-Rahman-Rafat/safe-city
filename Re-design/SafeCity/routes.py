@@ -18,6 +18,8 @@ def get_flash_alert():
         flash("New snapshots have been detected!", category="info")
         previousAlertCount = currentAlertCount
     
+
+
 @app.route("/signin", methods=['POST','GET'])
 @app.route("/", methods=['POST','GET'])
 def login():
