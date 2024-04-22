@@ -6,23 +6,36 @@
 
 {% block content %}
     <link rel="stylesheet" href="../static/analytics.css" />
-    <canvas id="snapshotChart" style="height: 300px;"></canvas>
+    <div  style="display: flex;
+    width: 45%;
+    
+    margin-left: -50%;
+    padding-left: 0px;
+    padding-right: 0px;
+    border-right-width: 0px;" >
+        <canvas  id="snapshotChartLocation"  ></canvas>
+        <div  style="border-left: 6px solid orange;
+        height: 450px; margin-left: 5%; margin-right: 5%;"></div>
+
+        <canvas  id="snapshotChartTime"  ></canvas>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         fetch('/get_snapshot_data')
             .then(response => response.json())
             .then(data => {
-                const ctx = document.getElementById('snapshotChart').getContext('2d');
-                new Chart(ctx, {
+                // Chart for number of snapshots per location
+                const ctxLocation = document.getElementById('snapshotChartLocation').getContext('2d');
+                new Chart(ctxLocation, {
                     type: 'bar',
                     data: {
-                        labels: data.labels,
+                        labels: data.labels_location,
                         datasets: [{
-                            label: 'Snapshots number per area',
-                            data: data.counts,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)', // Change color here
-                            borderColor: 'rgba(54, 162, 235, 1)', // Change border color here
-                            borderWidth: .8
+                            label: 'Snapshot Counts (Location)',
+                            data: data.counts_location,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
                         }]
                     },
                     options: {
@@ -30,12 +43,34 @@
                             y: {
                                 beginAtZero: true
                             }
-                        },
-                        maintainAspectRatio: true, // Maintain aspect ratio
-                        responsive: true // Enable responsiveness
+                        }
+                    }
+                });
+
+                // Chart for number of snapshots per day
+                const ctxTime = document.getElementById('snapshotChartTime').getContext('2d');
+                new Chart(ctxTime, {
+                    type: 'line',
+                    data: {
+                        labels: data.labels_time,
+                        datasets: [{
+                            label: 'Snapshot Counts (Per Day)',
+                            data: data.counts_time,
+                            fill: false,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
                     }
                 });
             });
     </script>
 {% endblock %}
+
 

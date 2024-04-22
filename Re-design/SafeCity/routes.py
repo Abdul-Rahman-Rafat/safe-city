@@ -202,29 +202,55 @@ def update(id):
 			return render_template("update.html", form=form,name_to_update = name_to_update,id=id)
 	else:
 		return render_template("update.html", form=form,name_to_update = name_to_update,id = id)
-     
-     
+
     
+     
+from datetime import datetime, timedelta
 
 @app.route('/get_snapshot_data')
+@login_required
 def get_snapshot_data():
-    snapshot_data = Snapshots.query.all()
+    # Check if the current user is an admin
+    if current_user.username=='admin':
+        # Fetch snapshots for all users
+        snapshot_data_all_users = Snapshots.query.all()
+    else:
+        # Fetch snapshots associated with the current user
+        snapshot_data_all_users = current_user.alerts
+    
     # Count the number of snapshots per location
-    snapshot_counts = {}
-    for snapshot in snapshot_data:
+    snapshot_counts_location = {}
+    for snapshot in snapshot_data_all_users:
         loc = snapshot.Loc
-        if loc in snapshot_counts:
-            snapshot_counts[loc] += 1
+        if loc in snapshot_counts_location:
+            snapshot_counts_location[loc] += 1
         else:
-            snapshot_counts[loc] = 1
-    # Convert the dictionary into a list of tuples
-    data_tuples = [(loc, count) for loc, count in snapshot_counts.items()]
-    # Sort the data by location
-    sorted_data = sorted(data_tuples, key=lambda x: x[0])
-    # Separate the labels and counts
-    labels = [entry[0] for entry in sorted_data]
-    counts = [entry[1] for entry in sorted_data]
-    return jsonify(labels=labels, counts=counts)
+            snapshot_counts_location[loc] = 1
+    
+    # Fetch timestamps for all snapshots
+    snapshot_data_time = db.session.query(Snapshots.Time).all()
+    
+    # Count the number of snapshots per day
+    snapshot_counts_time = {}
+    for snapshot_time in snapshot_data_time:
+        # Extract the date from the timestamp
+        day_key = snapshot_time[0].strftime('%Y-%m-%d')
+        if day_key in snapshot_counts_time:
+            snapshot_counts_time[day_key] += 1
+        else:
+            snapshot_counts_time[day_key] = 1
+    
+    # Generate labels for the last 7 days
+    today = datetime.utcnow().date()
+    labels_time = [(today - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(6, -1, -1)]
+
+    # Create counts for each label, defaulting to 0 if no data for a day
+    counts_time = [snapshot_counts_time.get(label, 0) for label in labels_time]
+
+    return jsonify(labels_location=list(snapshot_counts_location.keys()), counts_location=list(snapshot_counts_location.values()), labels_time=labels_time, counts_time=counts_time)
+
+
+
 
 
 
