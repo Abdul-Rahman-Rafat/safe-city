@@ -206,7 +206,25 @@ def update(id):
      
     
 
-
+@app.route('/get_snapshot_data')
+def get_snapshot_data():
+    snapshot_data = Snapshots.query.all()
+    # Count the number of snapshots per location
+    snapshot_counts = {}
+    for snapshot in snapshot_data:
+        loc = snapshot.Loc
+        if loc in snapshot_counts:
+            snapshot_counts[loc] += 1
+        else:
+            snapshot_counts[loc] = 1
+    # Convert the dictionary into a list of tuples
+    data_tuples = [(loc, count) for loc, count in snapshot_counts.items()]
+    # Sort the data by location
+    sorted_data = sorted(data_tuples, key=lambda x: x[0])
+    # Separate the labels and counts
+    labels = [entry[0] for entry in sorted_data]
+    counts = [entry[1] for entry in sorted_data]
+    return jsonify(labels=labels, counts=counts)
 
 
 

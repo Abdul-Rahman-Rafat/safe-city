@@ -1,15 +1,41 @@
-{%  extends 'parent-page1.html' %}
+{% extends 'parent-page1.html' %}
 
-      {%  block title %}
-            Analytics
-      {%  endblock %}
+{% block title %}
+    Analytics
+{% endblock %}
 
-        {%  block content %}
+{% block content %}
+    <link rel="stylesheet" href="../static/analytics.css" />
+    <canvas id="snapshotChart" style="height: 300px;"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        fetch('/get_snapshot_data')
+            .then(response => response.json())
+            .then(data => {
+                const ctx = document.getElementById('snapshotChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Snapshots number per area',
+                            data: data.counts,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)', // Change color here
+                            borderColor: 'rgba(54, 162, 235, 1)', // Change border color here
+                            borderWidth: .8
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        maintainAspectRatio: true, // Maintain aspect ratio
+                        responsive: true // Enable responsiveness
+                    }
+                });
+            });
+    </script>
+{% endblock %}
 
-<link rel="stylesheet" href="../static/analytics.css" />
-
-
-
-
-
-        {%  endblock %}
