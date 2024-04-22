@@ -12,7 +12,6 @@ from flask_bcrypt import Bcrypt
 from werkzeug.utils import secure_filename
 import os
 import cv2
-#from YOLO_Video import video_detection , video_detection2
 import numpy as np
 
 

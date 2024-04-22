@@ -1,16 +1,14 @@
 from ultralytics import YOLO
 import cv2
 import math
-path_x = r'c:\Users\yassi\Downloads\WhatsApp Video 2024-03-11 at 1.37.56 AM.mp4'
 def video_detection(path_x):
-    video_capture = path_x
     #Create a Webcam Object
-    cap=cv2.VideoCapture(video_capture)
+    cap=cv2.VideoCapture(0)
     frame_width=int(cap.get(3))
     frame_height=int(cap.get(4))
     #out=cv2.VideoWriter('output.avi', cv2.VideoWriter_fourcc('M', 'J', 'P','G'), 10, (frame_width, frame_height))
 
-    model=YOLO(r"c:\Users\yassi\Desktop\safecity systems\client_side\ui\crowd model\crowd59rp.pt")
+    model=YOLO(r"D:\pro\crowd59rp.pt")
     
     classNames1 = ['person']
    
