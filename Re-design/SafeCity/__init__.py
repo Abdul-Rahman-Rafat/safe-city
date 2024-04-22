@@ -31,7 +31,7 @@ from SafeCity import routes
 
 app.config['SECRET_KEY'] = '2b7fa43855102cc6bde6984c'
 
-# app.config['SECRET_KEY'] = 'muhammadmoin'
+
 # app.config['UPLOAD_FOLDER'] = r'C:\Users\yassi\Desktop\web app\crowd videos'
 #
 # class UploadFileForm(FlaskForm):

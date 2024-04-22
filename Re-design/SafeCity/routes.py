@@ -1,12 +1,15 @@
 import os
 import sqlite3
 from SafeCity import app
-from flask import render_template ,redirect , url_for , flash ,jsonify , request ,abort
+from flask import render_template ,redirect , url_for , flash ,jsonify , request ,abort,Response
 from SafeCity import db
 #when added a table in db u should add his import here too
 from SafeCity.models import User , Snapshots , Camera
 from SafeCity.forms import RegisterForm , LoginForm 
 from flask_login import login_user , logout_user , login_required , current_user
+import cv2
+from YOLO_Video import video_detection
+
 
 previousAlertCount = 0
 def get_flash_alert():
@@ -18,6 +21,24 @@ def get_flash_alert():
         flash("New snapshots have been detected!", category="info")
         previousAlertCount = currentAlertCount
     
+
+
+
+def generate_frames_web(path_x):
+    yolo_output = video_detection(path_x)
+    for detection_ in yolo_output:
+        ref, buffer = cv2.imencode('.jpg', detection_)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+
+@app.route('/webapp')
+def webapp():
+    return Response(generate_frames_web(path_x=0), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+
 
 
 @app.route("/signin", methods=['POST','GET'])

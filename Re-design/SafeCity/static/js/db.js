@@ -81,7 +81,7 @@ $(document).ready(function(){
     // Filter the entire table based on the "Username" column
     $("#myTable2 tr").filter(function() {
       // Use $(this).children("td:first-child") to target the first column (index 0) which corresponds to the "Username" column
-      $(this).toggle($(this).children("td:nth-child(1)").text().toLowerCase().indexOf(value) > -1);
+      $(this).toggle($(this).children("td:nth-child(2)").text().toLowerCase().indexOf(value) > -1);
     });
   });
 });
@@ -94,7 +94,7 @@ $(document).ready(function(){
     // Filter the entire table based on the "location" column
     $("#myTable2 tr").filter(function() {
       // Use $(this).children("td:first-child") to target the first column (index 0) which corresponds to the "Username" column
-      $(this).toggle($(this).children("td:nth-child(3)").text().toLowerCase().indexOf(value) > -1);
+      $(this).toggle($(this).children("td:nth-child(5)").text().toLowerCase().indexOf(value) > -1);
     });
   });
 });
