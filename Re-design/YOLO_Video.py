@@ -2,8 +2,10 @@ from datetime import datetime
 from ultralytics import YOLO
 import cv2
 import math
+img_name=0
 
 def video_detection(path_x):
+    global img_name
     # Create a Webcam Object
     cap = cv2.VideoCapture(0)
     frame_width = int(cap.get(3))
@@ -53,8 +55,9 @@ def video_detection(path_x):
             current_time = datetime.now()
             time_diff = (current_time - last_saved_time).total_seconds()
             if time_diff >= 10:
-                cv2.imwrite(f'{current_time.strftime("%Y%m%d_%H%M%S")}.jpg', img)
+                cv2.imwrite(f'{img_name}.jpg', img)
                 last_saved_time = current_time
+                img_name=img_name+1
         
         yield img
 
