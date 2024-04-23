@@ -55,10 +55,10 @@ def video_detection(path_x):
             current_time = datetime.now()
             time_diff = (current_time - last_saved_time).total_seconds()
             if time_diff >= 10:
-                cv2.imwrite(f'{img_name}.jpg', img)
+                
+                output_folder = 'output'
+                file_path = f'{output_folder}/{img_name}.jpg'
+                cv2.imwrite(file_path, img)
                 last_saved_time = current_time
                 img_name=img_name+1
-        
-        yield img
-
     cv2.destroyAllWindows()
