@@ -19,6 +19,8 @@ def video_detection(path_x):
         success, img = cap.read()
         results = model(img, stream=True)
         
+        detection_occurred = False  # Flag to indicate if detection occurred
+        
         for r in results:
             boxes = r.boxes
             for box in boxes:
@@ -44,13 +46,15 @@ def video_detection(path_x):
                     cv2.rectangle(img, (x1, y1), (x2, y2), color, 3)
                     cv2.rectangle(img, (x1, y1), c2, color, -1, cv2.LINE_AA)  # filled
                     cv2.putText(img, label, (x1, y1-2), 0, 1, [255, 255, 255], thickness=1, lineType=cv2.LINE_AA)
+                    detection_occurred = True
         
-        # Check if it's time to save an image
-        current_time = datetime.now()
-        time_diff = (current_time - last_saved_time).total_seconds()
-        if time_diff >= 10:
-            cv2.imwrite(f'detected_image_{current_time.strftime("%Y%m%d_%H%M%S")}.jpg', img)
-            last_saved_time = current_time
+        # Check if a detection occurred and if it's time to save an image
+        if detection_occurred:
+            current_time = datetime.now()
+            time_diff = (current_time - last_saved_time).total_seconds()
+            if time_diff >= 10:
+                cv2.imwrite(f'detected_image_{current_time.strftime("%Y%m%d_%H%M%S")}.jpg', img)
+                last_saved_time = current_time
         
         yield img
 
