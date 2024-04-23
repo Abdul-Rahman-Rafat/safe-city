@@ -61,4 +61,7 @@ def video_detection(path_x):
                 cv2.imwrite(file_path, img)
                 last_saved_time = current_time
                 img_name=img_name+1
+        
+        yield img
+
     cv2.destroyAllWindows()
