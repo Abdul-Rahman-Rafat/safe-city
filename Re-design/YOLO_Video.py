@@ -53,7 +53,7 @@ def video_detection(path_x):
             current_time = datetime.now()
             time_diff = (current_time - last_saved_time).total_seconds()
             if time_diff >= 10:
-                cv2.imwrite(f'detected_image_{current_time.strftime("%Y%m%d_%H%M%S")}.jpg', img)
+                cv2.imwrite(f'{current_time.strftime("%Y%m%d_%H%M%S")}.jpg', img)
                 last_saved_time = current_time
         
         yield img
