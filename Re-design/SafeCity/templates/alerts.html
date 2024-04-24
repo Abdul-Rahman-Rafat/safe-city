@@ -59,7 +59,7 @@
           
               <tr>
                 <!--  <td>{{ snap.Detection_img_ref }}</td>   -->
-                  <td class="w-25"><img class="rounded mx-auto d-block" src='../static/used_images/alerts_images/{{snap.Detection_img_ref}}'/></td>  
+                  <td class="w-25"><img class="rounded mx-auto d-block" src='/{{snap.Detection_img_ref}}'/></td>  
                   <td>{{ snap.Detection_type }}</td>
                   
                     {% if current_user.username == "admin" %}

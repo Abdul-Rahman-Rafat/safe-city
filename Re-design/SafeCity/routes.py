@@ -22,15 +22,14 @@ def get_flash_alert():
         previousAlertCount = currentAlertCount
     
 
-
-
 def generate_frames_web(path_x):
-    yolo_output = video_detection(path_x)
-    for detection_ in yolo_output:
-        ref, buffer = cv2.imencode('.jpg', detection_)
-        frame = buffer.tobytes()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+    for img_path in video_detection(path_x):
+        if img_path:
+            # Create a record in the Snapshots table for the detected image
+            snapshot = Snapshots(Detection_img_ref=img_path, Detection_type='DetectionType3', Loc='location1', Alert_sentTo='AbdulRahman')
+            db.session.add(snapshot)
+            db.session.commit()
+            db.session.close()
 
 
 @app.route('/webapp')
@@ -225,7 +224,7 @@ def update(id):
 		return render_template("update.html", form=form,name_to_update = name_to_update,id = id)
 
     
-     
+#charts     
 from datetime import datetime, timedelta
 
 @app.route('/get_snapshot_data')
@@ -273,24 +272,3 @@ def get_snapshot_data():
 
 
 
-
-
-# @app.route('/', methods=['GET', 'POST'])
-# def default():
-#     session.clear()
-#     return render_template('index.html')
-
-# @app.route('/FrontPage', methods=['GET', 'POST'])
-# def front():
-#     form = UploadFileForm()
-#     if form.validate_on_submit():
-#         file = form.file.data
-#         file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)), app.config['UPLOAD_FOLDER'],
-#                                secure_filename(file.filename)))
-#         session['video_path'] = os.path.join(os.path.abspath(os.path.dirname(__file__)), app.config['UPLOAD_FOLDER'],
-#                                              secure_filename(file.filename))
-#     return render_template('videoprojectnew.html', form=form)
-#
-# @app.route('/webapp')
-# def webapp():
-#     return Response(generate_frames_web(path_x=0), mimetype='multipart/x-mixed-replace; boundary=frame')

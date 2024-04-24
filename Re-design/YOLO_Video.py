@@ -28,13 +28,11 @@ def video_detection(path_x):
             for box in boxes:
                 x1, y1, x2, y2 = box.xyxy[0]
                 x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-                print(x1, y1, x2, y2)
                 conf = math.ceil((box.conf[0]*100))/100
                 cls = int(box.cls[0])
                 class_name = classNames1[cls]
                 label = f'{class_name}{conf}'
                 t_size = cv2.getTextSize(label, 0, fontScale=1, thickness=2)[0]
-                print(t_size)
                 c2 = x1 + t_size[0], y1 - t_size[1] - 3
                 if class_name == 'person':
                     color = (222, 82, 175)
@@ -55,13 +53,14 @@ def video_detection(path_x):
             current_time = datetime.now()
             time_diff = (current_time - last_saved_time).total_seconds()
             if time_diff >= 10:
-                
                 output_folder = 'output'
                 file_path = f'{output_folder}/{img_name}.jpg'
                 cv2.imwrite(file_path, img)
                 last_saved_time = current_time
-                img_name=img_name+1
-        
-        yield img
+                img_name = img_name + 1
+                # Return the path of the saved image
+                yield file_path
+
+        yield None  # Yield None if no detection occurred
 
     cv2.destroyAllWindows()
