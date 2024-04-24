@@ -8,8 +8,9 @@ from SafeCity.models import User , Snapshots , Camera
 from SafeCity.forms import RegisterForm , LoginForm 
 from flask_login import login_user , logout_user , login_required , current_user
 import cv2
-from YOLO_Video import video_detection
+from YOLO_Video import video_detection 
 
+#datetime.now()
 
 previousAlertCount = 0
 def get_flash_alert():
@@ -26,7 +27,7 @@ def generate_frames_web(path_x):
     for img_path in video_detection(path_x):
         if img_path:
             # Create a record in the Snapshots table for the detected image
-            snapshot = Snapshots(Detection_img_ref=img_path, Detection_type='DetectionType3', Loc='location1', Alert_sentTo='AbdulRahman')
+            snapshot = Snapshots(Detection_img_ref=img_path.split('.png')[0], Detection_type='DetectionType3', Loc=current_user.location , Alert_sentTo=current_user.username)
             db.session.add(snapshot)
             db.session.commit()
             db.session.close()
