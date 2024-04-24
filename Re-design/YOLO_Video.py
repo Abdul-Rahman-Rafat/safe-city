@@ -52,7 +52,7 @@ def video_detection(path_x):
         if detection_occurred:
             current_time = datetime.now()
             time_diff = (current_time - last_saved_time).total_seconds()
-            if time_diff >= 10:
+            if time_diff >= 5: #detect every ... seconds 
               #  output_folder = 'Re-design/SafeCity/static/used_images/alerts_images'
                 file_path = f'{img_name}.png'
                 cv2.imwrite(file_path, img)
