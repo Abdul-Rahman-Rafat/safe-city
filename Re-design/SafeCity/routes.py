@@ -8,7 +8,7 @@ from SafeCity.models import User , Snapshots , Camera
 from SafeCity.forms import RegisterForm , LoginForm 
 from flask_login import login_user , logout_user , login_required , current_user
 import cv2
-from YOLO_Video import video_detection 
+from SafeCity.YOLO_Video import video_detection 
 
 #datetime.now()
 
