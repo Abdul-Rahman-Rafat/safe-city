@@ -30,8 +30,9 @@ def generate_frames_web(path_x):
             snapshot = Snapshots(Detection_img_ref=img_path.split('.png')[0], Detection_type='DetectionType3', Loc=current_user.location , Alert_sentTo=current_user.username)
             db.session.add(snapshot)
             db.session.commit()
-            db.session.close()
-
+        #else:
+            #db.session.close()
+    
 
 @app.route('/webapp')
 def webapp():
