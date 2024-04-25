@@ -63,4 +63,3 @@ def video_detection(path_x):
 
         yield None  # Yield None if no detection occurred
 
-    cv2.destroyAllWindows()

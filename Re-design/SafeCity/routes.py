@@ -27,7 +27,7 @@ def generate_frames_web(path_x):
     for img_path in video_detection(path_x):
         if img_path:
             # Create a record in the Snapshots table for the detected image
-            snapshot = Snapshots(Detection_img_ref=img_path.split('.png')[0], Detection_type='DetectionType3', Loc=current_user.location , Alert_sentTo=current_user.username)
+            snapshot = Snapshots(Detection_img_ref=img_path.split('.png')[0], Detection_type='DetectionType3', Loc=current_user.location , Time=datetime.now() ,Alert_sentTo=current_user.username)
             db.session.add(snapshot)
             db.session.commit()
         #else:
