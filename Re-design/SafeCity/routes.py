@@ -31,7 +31,7 @@ def generate_frames_web(path_x):
             db.session.add(snapshot)
             db.session.commit()
         #else:
-            #db.session.close()
+            #db.session.close()  # send a record per visit the page then crashes
     
 
 @app.route('/webapp')
