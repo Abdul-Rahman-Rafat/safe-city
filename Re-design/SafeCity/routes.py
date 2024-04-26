@@ -63,16 +63,20 @@ def login():
     return render_template("signin.html", form=form)
 
 
-
+@app.route("/home")
 @app.route("/templates/home")
+@app.route("/update/home")
+
 @login_required
 def home():
     get_flash_alert()    # flash to see the notification
     alerts_count = len(Snapshots.query.all())
     return render_template("home.html")
 
-
 @app.route("/admin")
+@app.route("/templates/admin")
+@app.route("/update/admin")
+
 @login_required
 def admin():
     get_flash_alert()    # flash to see the notification
@@ -84,7 +88,10 @@ def admin():
     else:
         abort(403)
 
+@app.route("/alerts")
 @app.route("/templates/alerts")
+@app.route("/update/alerts")
+
 @login_required
 def snapshot():
 
@@ -119,6 +126,9 @@ def delete_snapshot(snapshot_id):
 
 
 @app.route("/signup" , methods=['POST','GET'])
+@app.route("/templates/signup" , methods=['POST','GET'])
+@app.route("/update/signup" , methods=['POST','GET'])
+
 @login_required
 def signup():
     get_flash_alert()    # flash to see the notification
@@ -147,13 +157,19 @@ def signup():
          abort(403)
 
 
+@app.route("/livestream")
 @app.route("/templates/livestream")
+@app.route("/update/livestream")
+
 @login_required
 def live():
     get_flash_alert()    # flash to see the notification
     return render_template('livestream.html')
 
+@app.route("/analytics")
 @app.route("/templates/analytics")
+@app.route("/update/analytics")
+
 @login_required
 def analysis():
     get_flash_alert()    # flash to see the notification
