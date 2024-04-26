@@ -6,21 +6,30 @@
 
 {% block content %}
     <link rel="stylesheet" href="../static/analytics.css" />
-    <div style="display: flex; justify-content: space-between; width: 80%; margin: 0 auto;">
-        <div style="flex: 1; margin-right: 10px;">
+    
+    <h1>Accidents statistics</h1>
+    <hr>
+    <div class="background-image -variant-t2" style="display: flex; justify-content: space-between; width: 80%; margin: 0 auto; ">
+        <div style="flex: 1; margin-right: 10px; border: 1px solid; border-radius: 16px;">
             <canvas id="snapshotChartLocation"></canvas>
         </div>
-        <div style="flex: 1; margin-left: 10px;">
-            <canvas id="snapshotChartDetectionType"></canvas>
+        <div style="flex: 1; margin-left: 10px; border: 1px solid; border-radius: 16px;">
+            <canvas id="snapshotChartDetectionType_bar"></canvas>
         </div>
     </div>
     <br>    <br>
 
-    <div style="display: flex; justify-content: space-between; width: 80%; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; width: 80%; margin: 0 auto; border: 1px solid; border-radius: 16px;">
+        <div style="flex: 1; margin-right: 10px;">
+            <canvas id="snapshotChartTime" style=" height: 400px; width: 1080px; "></canvas>
+        </div>
+        <div style="flex: 1; margin-left: 10px; height: 385px; width: 300px;">
 
-        <canvas id="snapshotChartTime" style="width: 100%; height: 400px;"></canvas>
+            <canvas id="snapshotChartDetectionType_pie"></canvas>
+        </div>
     </div>
-    
+  
+   
 
 
     
@@ -38,17 +47,36 @@
                         datasets: [{
                             label: 'Snapshot Counts (Location)',
                             data: data.counts_location,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: '#153448',
+                            borderColor: 'white',
                             borderWidth: 1
                         }]
                     },
                     options: {
                         scales: {
                             y: {
+                                display: false,
                                 beginAtZero: true
                             }
+                            ,
+                        x: {
+                            color: 'black', // Change the text color of the x-axis labels
+                            ticks: {
+                                font: {
+                                    weight: 'bold' // Make the text bold
+                                }
+                            }
                         }
+
+                        },
+                        plugins: {
+                        legend: {
+                            labels: {
+                                color: 'black' // Change the text color of the legend
+                                ,weight:'bold'
+                            }
+                        }
+                    }
                     }
                 });
 
@@ -56,26 +84,46 @@
                 const ctxTime = document.getElementById('snapshotChartTime').getContext('2d');
                 new Chart(ctxTime, {
                     type: 'line',
+                    fill: true,
                     data: {
                         labels: data.labels_time,
                         datasets: [{
                             label: 'Snapshot Counts (Per Day)',
                             data: data.counts_time,
                             fill: false,
-                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderColor: '#0E46A3',
                             borderWidth: 2
                         }]
                     },
                     options: {
                         scales: {
                             y: {
+                                display: false,
                                 beginAtZero: true
+                            }
+                            ,
+                        x: {
+                            color: 'black', // Change the text color of the x-axis labels
+                            ticks: {
+                                font: {
+                                    weight: 'bold' // Make the text bold
+                                }
+                            }
+                        }
+
+                        },
+                        plugins: {
+                        legend: {
+                            labels: {
+                                color: 'black' // Change the text color of the legend
+                                ,weight:'bold'
                             }
                         }
                     }
+                    }
                 });
                   // Chart for number of snapshots per detection type
-                  const ctxDetectionType = document.getElementById('snapshotChartDetectionType').getContext('2d');
+                  const ctxDetectionType = document.getElementById('snapshotChartDetectionType_bar').getContext('2d');
                 new Chart(ctxDetectionType, {
                     type: 'bar',
                     data: {
@@ -83,19 +131,73 @@
                         datasets: [{
                             label: 'Snapshot Counts (Detection Type)',
                             data: data.counts_detection_type,
-                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                            borderColor: 'rgba(153, 102, 255, 1)',
+                            backgroundColor: '#153448',
+                            borderColor: 'white',
                             borderWidth: 1
                         }]
                     },
                     options: {
                         scales: {
                             y: {
+                                display: false,
                                 beginAtZero: true
+                            }
+                            ,
+                        x: {
+                            color: 'black', // Change the text color of the x-axis labels
+                            ticks: {
+                                font: {
+                                    weight: 'bold' // Make the text bold
+                                }
+                            }
+                        }
+
+                        },
+                        plugins: {
+                        legend: {
+                            labels: {
+                                color: 'black' // Change the text color of the legend
+                                ,weight:'bold'
                             }
                         }
                     }
+                    }
                 });
+                 // Chart for number of snapshots per detection type
+            const ctxDetectionType2 = document.getElementById('snapshotChartDetectionType_pie').getContext('2d');
+            new Chart(ctxDetectionType2, {
+                type: 'pie',
+                data: {
+                    labels: data.labels_detection_type,
+                    datasets: [{
+                        label: 'Snapshot Counts (Detection Type)',
+                        data: data.counts_detection_type,
+                        backgroundColor: [
+                            'rgb(14, 41, 84)',
+                            'rgb(31, 110, 140)',
+                            'rgb(83, 92, 145)',
+                            'rgb(146, 144, 195)',
+                            'rgb(52, 73, 85)',
+                            'rgb(120, 160, 131)'
+                        ],
+                        borderColor: [
+                           
+                            'rgba(54, 162, 235, 1)',
+                            
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            display: false,
+                            beginAtZero: true
+                        }
+                    }
+                    
+                }
+            });
             });
         
     </script>
