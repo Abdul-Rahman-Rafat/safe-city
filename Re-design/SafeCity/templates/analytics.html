@@ -6,25 +6,21 @@
 
 {% block content %}
     <link rel="stylesheet" href="../static/analytics.css" />
-    <div  style="display: flex;
-    width: 45%;
-    
-    margin-left: -50%;
-    padding-left: 0px;
-    padding-right: 0px;
-    border-right-width: 0px;" >
-        <canvas  id="snapshotChartLocation"  ></canvas>
-        <div  style="border-left: 6px solid orange;
-        height: 450px; margin-left: 5%; margin-right: 5%; border-radius: 32px; "></div>
+    <div style="display: flex; justify-content: space-between; width: 80%; margin: 0 auto;">
+        <div style="flex: 1; margin-right: 10px;">
+            <canvas id="snapshotChartLocation"></canvas>
+        </div>
+        <div style="flex: 1; margin-left: 10px;">
+            <canvas id="snapshotChartDetectionType"></canvas>
+        </div>
+    </div>
+    <br>    <br>
 
-        <canvas id="snapshotChartDetectionType"  ></canvas>
+    <div style="display: flex; justify-content: space-between; width: 80%; margin: 0 auto;">
+
+        <canvas id="snapshotChartTime" style="width: 100%; height: 400px;"></canvas>
     </div>
     
-
-    <div   >
-       
-        <canvas  id="snapshotChartTime"  style="width:100%;" ></canvas>
-    </div>
 
 
     
