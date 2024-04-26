@@ -15,13 +15,19 @@
     border-right-width: 0px;" >
         <canvas  id="snapshotChartLocation"  ></canvas>
         <div  style="border-left: 6px solid orange;
-        height: 450px; margin-left: 5%; margin-right: 5%;"></div>
+        height: 450px; margin-left: 5%; margin-right: 5%; border-radius: 32px; "></div>
 
-        <canvas  id="snapshotChartTime"  ></canvas>
-
-        <canvas id="snapshotChartUserLocation" ></canvas>
-
+        <canvas id="snapshotChartDetectionType"  ></canvas>
     </div>
+    
+
+    <div   >
+       
+        <canvas  id="snapshotChartTime"  style="width:100%;" ></canvas>
+    </div>
+
+
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         fetch('/get_snapshot_data')
@@ -72,18 +78,17 @@
                         }
                     }
                 });
-
-                // Chart for number of snapshots per user location
-                const ctxUserLocation = document.getElementById('snapshotChartUserLocation').getContext('2d');
-                new Chart(ctxUserLocation, {
+                  // Chart for number of snapshots per detection type
+                  const ctxDetectionType = document.getElementById('snapshotChartDetectionType').getContext('2d');
+                new Chart(ctxDetectionType, {
                     type: 'bar',
                     data: {
-                        labels: data.labels_user_location,
+                        labels: data.labels_detection_type,
                         datasets: [{
-                            label: 'Snapshot Counts (User Location)',
-                            data: data.counts_user_location,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
+                            label: 'Snapshot Counts (Detection Type)',
+                            data: data.counts_detection_type,
+                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            borderColor: 'rgba(153, 102, 255, 1)',
                             borderWidth: 1
                         }]
                     },
@@ -96,8 +101,7 @@
                     }
                 });
             });
-            
-            
+        
     </script>
 {% endblock %}
 

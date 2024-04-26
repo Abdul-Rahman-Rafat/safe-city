@@ -278,6 +278,15 @@ def get_snapshot_data():
         else:
             snapshot_counts_time[day_key] = 1
     
+    
+    # Count the number of snapshots per detection type
+    snapshot_counts_detection_type = {}
+    for snapshot in snapshot_data_all_users:
+        detection_type = snapshot.Detection_type
+        if detection_type in snapshot_counts_detection_type:
+            snapshot_counts_detection_type[detection_type] += 1
+        else:
+            snapshot_counts_detection_type[detection_type] = 1
     # Generate labels for the last 7 days
     today = datetime.utcnow().date()
     labels_time = [(today - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(6, -1, -1)]
@@ -285,7 +294,10 @@ def get_snapshot_data():
     # Create counts for each label, defaulting to 0 if no data for a day
     counts_time = [snapshot_counts_time.get(label, 0) for label in labels_time]
 
-    return jsonify(labels_location=list(snapshot_counts_location.keys()), counts_location=list(snapshot_counts_location.values()), labels_time=labels_time, counts_time=counts_time)
+
+
+    return jsonify(labels_location=list(snapshot_counts_location.keys()), counts_location=list(snapshot_counts_location.values()), labels_time=labels_time, counts_time=counts_time 
+                   ,labels_detection_type=list(snapshot_counts_detection_type.keys()), counts_detection_type=list(snapshot_counts_detection_type.values()))
 
 
 
