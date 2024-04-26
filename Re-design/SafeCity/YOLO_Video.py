@@ -2,6 +2,12 @@ from datetime import datetime
 from ultralytics import YOLO
 import cv2
 import math
+from SafeCity.models import Snapshots 
+from SafeCity import db
+from flask_login import current_user
+from SafeCity import app
+
+
 img_name=0 # we should make it random combination
 
 def video_detection(path_x):
@@ -58,8 +64,10 @@ def video_detection(path_x):
                 cv2.imwrite(file_path, img)
                 last_saved_time = current_time
                 img_name = img_name + 1
-                # Return the path of the saved image
-                yield file_path
+                with app.app_context():
+                    snapshot = Snapshots(Detection_img_ref=img_name, Detection_type='DetectionType3', Loc='h' , Time=datetime.now() ,Alert_sentTo='ff')
+                    db.session.add(snapshot)
+                    db.session.commit()
 
-        yield None  # Yield None if no detection occurred
+            yield img
 
