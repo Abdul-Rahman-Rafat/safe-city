@@ -2,7 +2,7 @@ from datetime import datetime
 from ultralytics import YOLO
 import cv2
 import math
-img_name=0
+img_name=0 # we should make it random combination
 
 def video_detection(path_x):
     global img_name
