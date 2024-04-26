@@ -18,6 +18,9 @@
         height: 450px; margin-left: 5%; margin-right: 5%;"></div>
 
         <canvas  id="snapshotChartTime"  ></canvas>
+
+        <canvas id="snapshotChartUserLocation" ></canvas>
+
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -69,7 +72,32 @@
                         }
                     }
                 });
+
+                // Chart for number of snapshots per user location
+                const ctxUserLocation = document.getElementById('snapshotChartUserLocation').getContext('2d');
+                new Chart(ctxUserLocation, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels_user_location,
+                        datasets: [{
+                            label: 'Snapshot Counts (User Location)',
+                            data: data.counts_user_location,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
             });
+            
+            
     </script>
 {% endblock %}
 
