@@ -7,7 +7,9 @@ from SafeCity import db
 from flask_login import current_user
 from SafeCity import app
 from pathlib import Path
-#output_path=r"\C:\Users\abdul\OneDrive\Documents\GitHub\safe-city\Re-design\SafeCity\static\used_images\alerts_images"
+
+output_path=Path.cwd()
+
 
 img_name=0 # we should make it random combination
 
@@ -61,7 +63,7 @@ def video_detection(path_x):
             time_diff = (current_time - last_saved_time).total_seconds()
             if time_diff >= 10: #detect every ... seconds 
                 
-                file_path = f'{img_name}.png'
+                file_path = f'{output_path}\Re-design\SafeCity\\alerts_images\{img_name}.png'
                 print(file_path)
                 cv2.imwrite(file_path, img)
                 last_saved_time = current_time
