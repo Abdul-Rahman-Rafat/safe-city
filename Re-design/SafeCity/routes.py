@@ -64,7 +64,7 @@ def login():
 
 
 
-@app.route("/home")
+@app.route("/templates/home")
 @login_required
 def home():
     get_flash_alert()    # flash to see the notification
@@ -84,7 +84,7 @@ def admin():
     else:
         abort(403)
 
-@app.route("/alerts")
+@app.route("/templates/alerts")
 @login_required
 def snapshot():
 
@@ -147,13 +147,13 @@ def signup():
          abort(403)
 
 
-@app.route("/livestream")
+@app.route("/templates/livestream")
 @login_required
 def live():
     get_flash_alert()    # flash to see the notification
     return render_template('livestream.html')
 
-@app.route("/analytics")
+@app.route("/templates/analytics")
 @login_required
 def analysis():
     get_flash_alert()    # flash to see the notification
