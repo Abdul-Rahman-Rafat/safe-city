@@ -69,7 +69,7 @@ def video_detection(path_x):
                 last_saved_time = current_time
                 img_name = img_name + 1
                 with app.app_context():
-                    snapshot = Snapshots(Detection_img_ref=img_name, Detection_type='DetectionType3', Loc=current_user.location , Time=datetime.now() ,Alert_sentTo=current_user.username)
+                    snapshot = Snapshots(Detection_img_ref=img_name, Detection_type=class_name, Loc='current_userlocation' , Time=datetime.now() ,Alert_sentTo='current_userusername')
                     db.session.add(snapshot)
                     db.session.commit()
 
