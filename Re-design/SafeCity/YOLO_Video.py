@@ -2,7 +2,7 @@ from datetime import datetime
 from ultralytics import YOLO
 import cv2
 import math
-from SafeCity.models import Snapshots 
+from SafeCity.models import Snapshots , User
 from SafeCity import db
 from flask_login import current_user
 from SafeCity import app
@@ -69,7 +69,7 @@ def video_detection(path_x):
                 last_saved_time = current_time
                 img_name = img_name + 1
                 with app.app_context():
-                    snapshot = Snapshots(Detection_img_ref=img_name, Detection_type='DetectionType3', Loc='h' , Time=datetime.now() ,Alert_sentTo='ff')
+                    snapshot = Snapshots(Detection_img_ref=img_name, Detection_type='DetectionType3', Loc=current_user.location , Time=datetime.now() ,Alert_sentTo=current_user.username)
                     db.session.add(snapshot)
                     db.session.commit()
 
