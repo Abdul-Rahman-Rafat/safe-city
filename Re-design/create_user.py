@@ -8,7 +8,7 @@ def create_user():
         username='admin',
         password='admin',
         location='Basement',
-        e_mail='abdorafat73646854@gmail.com'
+        e_mail='abdorafat489@gmail.com'
     )
     
     # Add the user to the database session
