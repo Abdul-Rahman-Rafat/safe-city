@@ -73,5 +73,5 @@ def video_detection(path_x):
                     db.session.add(snapshot)
                     db.session.commit()
 
-            yield img
+        yield img
 
