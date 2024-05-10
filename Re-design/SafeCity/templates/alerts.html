@@ -50,7 +50,7 @@
               {% endif %}
 
               <th scope="col">Time</th>
-              <th scope="col">  <!-- for button --></th>
+              <th scope="col">   <!-- for button --></th>
           </tr>
       </thead>
       <tbody id="myTable">
@@ -59,7 +59,7 @@
           
               <tr>
                 <!--  <td>{{ snap.Detection_img_ref }}</td>   -->
-                  <td class="w-25"><img class="rounded mx-auto d-block" src='../alerts_images/{{snap.Detection_img_ref}}.png'/></td>  
+                  <td class="w-25"><img class="rounded mx-auto d-block" src='../static/used_images/{{snap.Detection_img_ref}}.png'/></td>  
                   <td>{{ snap.Detection_type }}</td>
                   
                     {% if current_user.username == "admin" %}

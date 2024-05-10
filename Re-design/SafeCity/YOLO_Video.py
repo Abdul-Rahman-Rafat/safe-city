@@ -63,15 +63,15 @@ def video_detection(path_x):
             time_diff = (current_time - last_saved_time).total_seconds()
             if time_diff >= 10: #detect every ... seconds 
                 
-                file_path = f'{output_path}\Re-design\SafeCity\\alerts_images\{img_name}.png'
+                file_path = f'{output_path}\\Re-design\\SafeCity\\static\\used_images\\{img_name}.png'
                 print(file_path)
                 cv2.imwrite(file_path, img)
                 last_saved_time = current_time
-                img_name = img_name + 1
+                
                 with app.app_context():
                     snapshot = Snapshots(Detection_img_ref=img_name, Detection_type=class_name, Loc='current_userlocation' , Time=datetime.now() ,Alert_sentTo='current_userusername')
                     db.session.add(snapshot)
                     db.session.commit()
-
+                img_name = img_name + 1
         yield img
 
