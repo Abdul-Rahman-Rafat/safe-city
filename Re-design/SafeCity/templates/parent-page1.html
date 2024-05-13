@@ -114,6 +114,15 @@
   
     </header>
         <div class="parent-page1-container1"></div>
+        <div id="flash-message" class="alert alert-warning" role="alert" style="display: none;">
+          New snapshots have been detected! Check it out!
+        </div>
+
+        <!-- Audio element for the sound -->
+        <audio id="notification-sound" controls >
+          <source src="https://www.computerhope.com/jargon/m/example.mp3" type="audio/mpeg">
+        </audio>
+
 
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -195,32 +204,43 @@
       </div>
     </div>
     <script data-section-id="navbar" src="https://unpkg.com/@teleporthq/teleport-custom-scripts" ></script>
+    <script>
+      function updateAlertCount() {
+        fetch('/get_alert_count')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(data => {
+            const currentAlertCount = data.alertCount;
+            const previousAlertCount = parseInt(document.getElementById('alertCount').textContent);
+            document.getElementById('alertCount').textContent = currentAlertCount;
+
+            // Compare current and previous alert counts
+            if (currentAlertCount > previousAlertCount) {
+              // Show flash message
+              const flashMessageDiv = document.getElementById("flash-message");
+              flashMessageDiv.style.display = "block";
+
+              // Play notification sound
+              const notificationSound = document.getElementById("notification-sound");
+              notificationSound.play();
+
+              // Hide flash message after 3 seconds
+              setTimeout(function() {
+                flashMessageDiv.style.display = "none";
+              }, 3000);
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching alert count:', error);
+          });
+      }
+
+      updateAlertCount();
+      setInterval(updateAlertCount, 1000);
+    </script>
   </body>
 </html>
-
-
-<script>
-  // Function to fetch the number of alerts and update the count
-  function updateAlertCount() {
-    fetch('/get_alert_count')
-      .then(response => response.json())
-      .then(data => {
-        const currentAlertCount = data.alertCount;
-        document.getElementById('alertCount').textContent = currentAlertCount;
-
-        // Update the previous alert count
-        previousAlertCount = currentAlertCount;
-      })
-      .catch(error => console.error('Error fetching alert count:', error));
-  }
-
-  // Call updateAlertCount function initially to update the count when the page loads
-  updateAlertCount();
-
-  // Set interval to refresh the alert count every 1 second (1000 milliseconds)
-  setInterval(updateAlertCount, 1000);
-
-
-  
-</script>
-

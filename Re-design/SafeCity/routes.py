@@ -12,15 +12,15 @@ from SafeCity.YOLO_Video import video_detection
 
 #datetime.now()
 
-previousAlertCount = 0
-def get_flash_alert():
-    global previousAlertCount
-    # Fetch current count of snapshots
-    currentAlertCount = len(Snapshots.query.all())
-    # Check if the current count is greater than the previous count
-    if currentAlertCount > previousAlertCount:
-        flash("New snapshots have been detected!", category="info")
-        previousAlertCount = currentAlertCount
+# previousAlertCount = 0
+# def #get_flash_alert():
+#     global previousAlertCount
+#     # Fetch current count of snapshots
+#     currentAlertCount = len(Snapshots.query.all())
+#     # Check if the current count is greater than the previous count
+#     if currentAlertCount > previousAlertCount:
+#         flash("New snapshots have been detected!", category="info")
+#         previousAlertCount = currentAlertCount
     
 
 def generate_frames_web(path_x):
@@ -68,7 +68,7 @@ def login():
 
 @login_required
 def home():
-    get_flash_alert()    # flash to see the notification
+    #get_flash_alert()    # flash to see the notification
     alerts_count = len(Snapshots.query.all())
     return render_template("home.html")
 
@@ -78,7 +78,7 @@ def home():
 
 @login_required
 def admin():
-    get_flash_alert()    # flash to see the notification
+    #get_flash_alert()    # flash to see the notification
     if current_user.username == 'admin':
         alerts_count = len(Snapshots.query.all())
         users = User.query.all()
@@ -93,7 +93,7 @@ def admin():
 @login_required
 def snapshot():
 
-    get_flash_alert()    # flash to see the notification
+    #get_flash_alert()    # flash to see the notification
 
 
     # Fetch all alerts
@@ -128,7 +128,7 @@ def delete_snapshot(snapshot_id):
 @app.route("/update/signup" , methods=['POST','GET'])
 @login_required
 def signup():
-    get_flash_alert()    # flash to see the notification
+    #get_flash_alert()    # flash to see the notification
 
     if current_user.username == 'admin':
         form = RegisterForm()
@@ -159,7 +159,7 @@ def signup():
 @app.route("/update/livestream")
 @login_required
 def live():
-    get_flash_alert()    # flash to see the notification
+    #get_flash_alert()    # flash to see the notification
     return render_template('livestream.html')
 
 @app.route("/analytics")
@@ -167,7 +167,7 @@ def live():
 @app.route("/update/analytics")
 @login_required
 def analysis():
-    get_flash_alert()    # flash to see the notification
+    #get_flash_alert()    # flash to see the notification
     return render_template("analytics.html")
 
 
