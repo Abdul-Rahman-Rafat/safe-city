@@ -118,11 +118,7 @@
           New snapshots have been detected! Check it out!
         </div>
 
-        <!-- Audio element for the sound -->
-        <audio id="notification-sound" controls >
-          <source src="https://www.computerhope.com/jargon/m/example.mp3" type="audio/mpeg">
-        </audio>
-
+      
 
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -225,8 +221,8 @@
               flashMessageDiv.style.display = "block";
 
               // Play notification sound
-              const notificationSound = document.getElementById("notification-sound");
-              notificationSound.play();
+              var audio = new Audio('C:\Users\abdul\OneDrive\Documents\GitHub\safe-city\Re-design\SafeCity\templates\minion_fire_alarm.mp3');
+              audio.play();
 
               // Hide flash message after 3 seconds
               setTimeout(function() {
