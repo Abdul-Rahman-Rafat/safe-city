@@ -13,7 +13,7 @@ output_path=Path.cwd()
 
 img_name=0 # we should make it random combination
 
-def video_detection(path_x):
+def video_detection(path_x,user):
     global img_name
     # Create a Webcam Object
     cap = cv2.VideoCapture(0)
@@ -69,7 +69,7 @@ def video_detection(path_x):
                 last_saved_time = current_time
                 
                 with app.app_context():
-                    snapshot = Snapshots(Detection_img_ref=img_name, Detection_type=class_name, Loc='current_userlocation' , Time=datetime.now() ,Alert_sentTo='current_userusername')
+                    snapshot = Snapshots(Detection_img_ref=img_name, Detection_type=class_name, Loc='current_userlocation' , Time=datetime.now() ,Alert_sentTo=user)
                     db.session.add(snapshot)
                     db.session.commit()
                 img_name = img_name + 1

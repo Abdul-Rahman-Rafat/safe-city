@@ -23,8 +23,8 @@ from SafeCity.YOLO_Video import video_detection
 #         previousAlertCount = currentAlertCount
     
 
-def generate_frames_web(path_x):
-    yolo_output = video_detection(path_x)
+def generate_frames_web(path_x,user_info,user_loc):
+    yolo_output = video_detection(path_x,user_info,user_loc)
     for detection_ in yolo_output:
         ref, buffer = cv2.imencode('.jpg', detection_)
         frame = buffer.tobytes()
@@ -34,8 +34,9 @@ def generate_frames_web(path_x):
         
 @app.route('/webapp')
 def webapp():
-    
-    return Response(generate_frames_web(path_x=0), mimetype='multipart/x-mixed-replace; boundary=frame')
+    user_info=current_user.username
+    user_loc=current_user.location
+    return Response(generate_frames_web(path_x=0,user_info=user_info,user_loc=user_loc), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 
