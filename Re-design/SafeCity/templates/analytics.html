@@ -7,37 +7,53 @@
 {% block content %}
     <link rel="stylesheet" href="../static/analytics.css" />
     
-    <h1>Accidents statistics</h1>
+    <h1>Accidents Statistics</h1>
     <hr>
-    <div  class="background-image -variant-t2" style="display: flex; justify-content: space-between; width: 80%; margin: 0 auto; ">
-        <div class="shadow-lg p-3 mb-5 bg-white rounded" style="flex: 1; margin-right: 10px; ">
+    <div class="counters-container" style="display: flex; justify-content: space-around; width: 80%; margin: 20px auto;">
+        <div class="counter-card" style="text-align: center; padding: 20px; border-radius: 10px; background-color: #f8d7da; color: #721c24;">
+            <h3>Gun Detections</h3>
+            <div id="gunCounter" style="font-size: 2em; font-weight: bold;">0</div>
+            <p>Total Detections: <span id="gunTotal">0</span></p>
+        </div>
+        <div class="counter-card" style="text-align: center; padding: 20px; border-radius: 10px; background-color: #d4edda; color: #155724;">
+            <h3>People Detections</h3>
+            <div id="peopleCounter" style="font-size: 2em; font-weight: bold;">0</div>
+            <p>Total Detections: <span id="peopleTotal">0</span></p>
+        </div>
+        <div class="counter-card" style="text-align: center; padding: 20px; border-radius: 10px; background-color: #d1ecf1; color: #0c5460;">
+            <h3>Knife Detections</h3>
+            <div id="knifeCounter" style="font-size: 2em; font-weight: bold;">0</div>
+            <p>Total Detections: <span id="knifeTotal">0</span></p>
+        </div>
+    </div>
+
+    <div class="background-image -variant-t2" style="display: flex; justify-content: space-between; width: 80%; margin: 20px auto;">
+        <div class="shadow-lg p-3 mb-5 bg-white rounded" style="flex: 1; margin-right: 10px;">
             <canvas id="snapshotChartLocation"></canvas>
         </div>
-        <div class="shadow-lg p-3 mb-5 bg-white rounded" style="flex: 1; margin-left: 10px; ">
+        <div class="shadow-lg p-3 mb-5 bg-white rounded" style="flex: 1; margin-left: 10px;">
             <canvas id="snapshotChartDetectionType_bar"></canvas>
         </div>
     </div>
-    <br>    <br>
+    <br> <br>
 
-    <div class="shadow-lg p-3 mb-5 bg-white rounded" style="display: flex; justify-content: space-between; width: 80%; margin: 0 auto; ">
-        <div style="flex: 1; margin-right: 10px;">
-            <canvas id="snapshotChartTime" style=" height: 400px; width: 1080px; "></canvas>
-        </div>
-        <div style="flex: 1; margin-left: 10px; height: 385px; width: 300px;">
-
-            <canvas id="snapshotChartDetectionType_pie"></canvas>
-        </div>
+    <div class="shadow-lg p-3 mb-5 bg-white rounded" style="width: 80%; margin: 0 auto;">
+        <canvas id="snapshotChartTime" style="height: 400px; width: 100%;"></canvas>
     </div>
-  
-   
 
-
-    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         fetch('/get_snapshot_data')
             .then(response => response.json())
             .then(data => {
+                document.getElementById('gunCounter').textContent = data.counts_gun;
+                document.getElementById('peopleCounter').textContent = data.counts_people;
+                document.getElementById('knifeCounter').textContent = data.counts_knife;
+
+                document.getElementById('gunTotal').textContent = data.total_gun;
+                document.getElementById('peopleTotal').textContent = data.total_people;
+                document.getElementById('knifeTotal').textContent = data.total_knife;
+
                 // Chart for number of snapshots per location
                 const ctxLocation = document.getElementById('snapshotChartLocation').getContext('2d');
                 new Chart(ctxLocation, {
@@ -55,83 +71,82 @@
                     options: {
                         scales: {
                             y: {
-                                display: false,
+                                display: true,
                                 beginAtZero: true
+                            },
+                            x: {
+                                color: 'black',
+                                ticks: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                }
                             }
-                            ,
-                        x: {
-                            color: 'black', // Change the text color of the x-axis labels
-                            ticks: {
-                                font: {
-                                    weight: 'bold' // Make the text bold
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: 'black',
+                                    font: {
+                                        weight: 'bold'
+                                    }
                                 }
                             }
                         }
-
-                        },
-                        plugins: {
-                        legend: {
-                            labels: {
-                                color: 'black' // Change the text color of the legend
-                                ,weight:'bold'
-                            }
-                        }
-                    }
                     }
                 });
 
-                // Chart for number of snapshots per day
+                // Chart for number of snapshots per day (last 7 days)
                 const ctxTime = document.getElementById('snapshotChartTime').getContext('2d');
                 new Chart(ctxTime, {
-                    type: 'line',
-                    fill: true,
+                    type: 'bar',
                     data: {
-                        labels: data.labels_time,
+                        labels: data.labels_time.slice(-7),
                         datasets: [{
-                            label: 'Snapshot Counts (Per Day)',
-                            data: data.counts_time,
-                            fill: false,
-                            borderColor: '#0E46A3',
+                            label: 'Snapshot Counts (Last 7 Days)',
+                            data: data.counts_time.slice(-7),
+                            backgroundColor: '#0E46A3',
                             borderWidth: 2
                         }]
                     },
                     options: {
                         scales: {
                             y: {
-                                display: false,
+                                display: true,
                                 beginAtZero: true
+                            },
+                            x: {
+                                color: 'black',
+                                ticks: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                }
                             }
-                            ,
-                        x: {
-                            color: 'black', // Change the text color of the x-axis labels
-                            ticks: {
-                                font: {
-                                    weight: 'bold' // Make the text bold
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: 'black',
+                                    font: {
+                                        weight: 'bold'
+                                    }
                                 }
                             }
                         }
-
-                        },
-                        plugins: {
-                        legend: {
-                            labels: {
-                                color: 'black' // Change the text color of the legend
-                                ,weight:'bold'
-                            }
-                        }
-                    }
                     }
                 });
-                  // Chart for number of snapshots per detection type
-                  const ctxDetectionType = document.getElementById('snapshotChartDetectionType_bar').getContext('2d');
-                new Chart(ctxDetectionType, {
+
+                // Chart for number of snapshots per detection type (bar)
+                const ctxDetectionTypeBar = document.getElementById('snapshotChartDetectionType_bar').getContext('2d');
+                new Chart(ctxDetectionTypeBar, {
                     type: 'bar',
                     data: {
                         labels: data.labels_detection_type,
                         datasets: [{
                             label: 'Snapshot Counts (Detection Type)',
                             data: data.counts_detection_type,
-                            backgroundColor: '#153448',
+                            backgroundColor: ['#FF6384', '#36A2EB', '#4BC0C0'],
                             borderColor: 'white',
                             borderWidth: 1
                         }]
@@ -139,68 +154,30 @@
                     options: {
                         scales: {
                             y: {
-                                display: false,
+                                display: true,
                                 beginAtZero: true
+                            },
+                            x: {
+                                color: 'black',
+                                ticks: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                }
                             }
-                            ,
-                        x: {
-                            color: 'black', // Change the text color of the x-axis labels
-                            ticks: {
-                                font: {
-                                    weight: 'bold' // Make the text bold
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: 'black',
+                                    font: {
+                                        weight: 'bold'
+                                    }
                                 }
                             }
                         }
-
-                        },
-                        plugins: {
-                        legend: {
-                            labels: {
-                                color: 'black' // Change the text color of the legend
-                                ,weight:'bold'
-                            }
-                        }
-                    }
                     }
                 });
-                 // Chart for number of snapshots per detection type
-            const ctxDetectionType2 = document.getElementById('snapshotChartDetectionType_pie').getContext('2d');
-            new Chart(ctxDetectionType2, {
-                type: 'pie',
-                data: {
-                    labels: data.labels_detection_type,
-                    datasets: [{
-                        label: 'Snapshot Counts (Detection Type)',
-                        data: data.counts_detection_type,
-                        backgroundColor: [
-                            'rgb(14, 41, 84)',
-                            'rgb(31, 110, 140)',
-                            'rgb(83, 92, 145)',
-                            'rgb(146, 144, 195)',
-                            'rgb(52, 73, 85)',
-                            'rgb(120, 160, 131)'
-                        ],
-                        borderColor: [
-                           
-                            'rgba(54, 162, 235, 1)',
-                            
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            display: false,
-                            beginAtZero: true
-                        }
-                    }
-                    
-                }
             });
-            });
-        
     </script>
 {% endblock %}
-
-

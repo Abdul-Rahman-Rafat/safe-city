@@ -8,7 +8,7 @@ from SafeCity.models import User , Snapshots , Camera
 from SafeCity.forms import RegisterForm , LoginForm 
 from flask_login import login_user , logout_user , login_required , current_user
 import cv2
-from SafeCity.YOLO_Video import video_detection 
+from SafeCity.YOLO_Video import video_detection , video_detection2
 
 #datetime.now()
 
@@ -23,20 +23,40 @@ from SafeCity.YOLO_Video import video_detection
 #         previousAlertCount = currentAlertCount
     
 
-def generate_frames_web(path_x):
-    yolo_output = video_detection(path_x)
+
+def generate_frames_web(path_x, user_info , mail):
+    yolo_output = video_detection(path_x, user_info , mail) 
+    for detection_ in yolo_output:
+        ref, buffer = cv2.imencode('.jpg', detection_)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        
+
+def generate_frames_web2(path_x, user_info , mail):
+    yolo_output = video_detection2(path_x, user_info , mail) 
     for detection_ in yolo_output:
         ref, buffer = cv2.imencode('.jpg', detection_)
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-        
+
 @app.route('/webapp')
 def webapp():
-    
-    return Response(generate_frames_web(path_x=0), mimetype='multipart/x-mixed-replace; boundary=frame')
+    user_mail = current_user.e_mail
+    user_info = current_user.username  
+    if user_info is None:
+        return "User not logged in", 403
+    return Response(generate_frames_web(path_x=0, user_info=user_info , mail= user_mail), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route('/webapp2')
+def webapp2():
+    user_mail = current_user.e_mail
+    user_info = current_user.username  
+    if user_info is None:
+        return "User not logged in", 403
+    return Response(generate_frames_web2(path_x=r'c:\Users\yassi\Downloads\Clerk bombarded by 4 gunmen during robbery at SW Houston gas station, video shows.mp4', user_info=user_info , mail= user_mail ), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 
@@ -293,7 +313,6 @@ def get_snapshot_data():
 
     return jsonify(labels_location=list(snapshot_counts_location.keys()), counts_location=list(snapshot_counts_location.values()), labels_time=labels_time, counts_time=counts_time 
                    ,labels_detection_type=list(snapshot_counts_detection_type.keys()), counts_detection_type=list(snapshot_counts_detection_type.values()))
-
 
 
 
