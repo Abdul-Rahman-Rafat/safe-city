@@ -8,7 +8,7 @@ from SafeCity.models import User , Snapshots , Camera
 from SafeCity.forms import RegisterForm , LoginForm 
 from flask_login import login_user , logout_user , login_required , current_user
 import cv2
-from SafeCity.YOLO_Video import video_detection 
+from SafeCity.YOLO_Video import video_detection , video_detection2
 
 #datetime.now()
 
@@ -23,8 +23,8 @@ from SafeCity.YOLO_Video import video_detection
 #         previousAlertCount = currentAlertCount
     
 
-def generate_frames_web(path_x,user_info,user_loc):
-    yolo_output = video_detection(path_x,user_info,user_loc)
+def generate_frames_web(path_x,user_info,user_loc , user_mail):
+    yolo_output = video_detection(path_x,user_info,user_loc,user_mail)
     for detection_ in yolo_output:
         ref, buffer = cv2.imencode('.jpg', detection_)
         frame = buffer.tobytes()
@@ -36,8 +36,24 @@ def generate_frames_web(path_x,user_info,user_loc):
 def webapp():
     user_info=current_user.username
     user_loc=current_user.location
-    return Response(generate_frames_web(path_x=0,user_info=user_info,user_loc=user_loc), mimetype='multipart/x-mixed-replace; boundary=frame')
+    user_mail = current_user.e_mail
+    return Response(generate_frames_web(path_x=1,user_info=user_info,user_loc=user_loc , user_mail=user_mail), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+def generate_frames_web2(path_x,user_info,user_loc , user_mail):
+    yolo_output = video_detection2(path_x,user_info,user_loc,user_mail)
+    for detection_ in yolo_output:
+        ref, buffer = cv2.imencode('.jpg', detection_)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+        
+@app.route('/webapp2')
+def webapp2():
+    user_info=current_user.username
+    user_loc=current_user.location
+    user_mail = current_user.e_mail
+    return Response(generate_frames_web2(path_x=1,user_info=user_info,user_loc=user_loc , user_mail=user_mail), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 
