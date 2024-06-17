@@ -15,10 +15,10 @@ output_path=Path.cwd()
 img_name= re_image_name()
 img_name = int(img_name) + 1 
 
-def video_detection(path_x,user , loc,user_mail):
+def video_detection(path_x,user , loc,user_mail,CameraID , coroodinate):
     global img_name
     # Create a Webcam Object
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(path_x)
     frame_width = int(cap.get(3))
     frame_height = int(cap.get(4))
     
@@ -69,25 +69,25 @@ def video_detection(path_x,user , loc,user_mail):
                 print(file_path)
                 cv2.imwrite(file_path, img)
                 last_saved_time = current_time
-                send_mail(receiver_mail=user_mail , image_path=file_path ,incident_type=class_name,location=loc)
+                send_mail(receiver_mail=user_mail , image_path=file_path ,incident_type=class_name,location=loc,coroodinate=coroodinate )
                 
                 with app.app_context():
-                    snapshot = Snapshots(Detection_img_ref=img_name, Detection_type=class_name, Loc=loc , Time=datetime.now() ,Alert_sentTo=user)
+                    snapshot = Snapshots(Detection_img_ref=img_name, Detection_type=class_name, Loc=loc , Time=datetime.now() ,Alert_sentTo=user , CameraID=CameraID)
                     db.session.add(snapshot)
                     db.session.commit()
                 img_name = img_name + 1
         yield img
 
-def video_detection2(path_x,user , loc,user_mail):
+def video_detection2(path_x,user , loc,user_mail,CameraID,coroodinate):
     global img_name
     # Create a Webcam Object
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(path_x)
     frame_width = int(cap.get(3))
     frame_height = int(cap.get(4))
     
-    model = YOLO(r"c:\Users\yassi\Desktop\safecity systems\client_side\ui\guns model\115e_weights.pt")
+    model = YOLO(r"c:\Users\yassi\Downloads\140e (1).pt")
     
-    classNames1 = ['gun']
+    classNames1 = ['gun' , 'knife' , 'fire']
     
     last_saved_time = datetime.now()
 
@@ -132,10 +132,10 @@ def video_detection2(path_x,user , loc,user_mail):
                 print(file_path)
                 cv2.imwrite(file_path, img)
                 last_saved_time = current_time
-                send_mail(receiver_mail=user_mail , image_path=file_path ,incident_type=class_name,location=loc)
+                send_mail(receiver_mail=user_mail , image_path=file_path ,incident_type=class_name,location=loc,coroodinate=coroodinate)
                 
                 with app.app_context():
-                    snapshot = Snapshots(Detection_img_ref=img_name, Detection_type=class_name, Loc=loc , Time=datetime.now() ,Alert_sentTo=user)
+                    snapshot = Snapshots(Detection_img_ref=img_name, Detection_type=class_name, Loc=loc , Time=datetime.now() ,Alert_sentTo=user , CameraID=CameraID)
                     db.session.add(snapshot)
                     db.session.commit()
                 img_name = img_name + 1

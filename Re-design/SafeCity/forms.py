@@ -17,6 +17,8 @@ class RegisterForm(FlaskForm):
     password = PasswordField(label='Password' , validators=[Length(max=20),DataRequired()]) 
     location = StringField(label='Location', validators=[DataRequired()])  
     e_mail   = EmailField(label='E-mail', validators=[DataRequired()])
+    CameraID   = StringField(label='CameraID', validators=[DataRequired()])
+    
     #camera_id = BooleanField(label='CameraID',validators=[DataRequired()])
     submit = SubmitField(label='Sign up')
 

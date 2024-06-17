@@ -3,7 +3,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 
-def send_mail(receiver_mail, image_path , incident_type , location):
+def send_mail(receiver_mail, image_path , incident_type , location,coroodinate):
     email = 'safecityfcis@gmail.com'
     password = 'jvhqfhhfszbhgtys'
     
@@ -12,6 +12,7 @@ def send_mail(receiver_mail, image_path , incident_type , location):
         "An incident is detected in the system. Please check the alerts section.\n\n"
         f"Type: {incident_type}\n"
         f"Location: {location}"
+        f"coordinates:{coroodinate}"
     )
 
     msg = MIMEMultipart()

@@ -10,6 +10,22 @@ from flask_login import login_user , logout_user , login_required , current_user
 import cv2
 from SafeCity.YOLO_Video import video_detection , video_detection2
 
+
+def get_location(camera_id):
+    # Connect to the SQLite database
+    conn = sqlite3.connect(r'C:\Users\yassi\Desktop\safecity site new\safe-city\Re-design\instance\SafeCity.db')
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT location FROM camera WHERE camera_id = ?', (camera_id,))
+    loc = cursor.fetchone()
+
+    cursor.execute('SELECT coordinates FROM camera WHERE camera_id = ?', (camera_id,))
+    coroodinate = cursor.fetchone()
+    # Close the connection
+    conn.close()
+    print(loc[0])
+    return loc[0],coroodinate[0]
+
 #datetime.now()
 
 # previousAlertCount = 0
@@ -23,24 +39,31 @@ from SafeCity.YOLO_Video import video_detection , video_detection2
 #         previousAlertCount = currentAlertCount
     
 
-def generate_frames_web(path_x,user_info,user_loc , user_mail):
-    yolo_output = video_detection(path_x,user_info,user_loc,user_mail)
+def generate_frames_web(path_x,user_info,user_loc , user_mail , CameraID , coroodinate):
+    yolo_output = video_detection(path_x,user_info,user_loc,user_mail, CameraID,coroodinate)
     for detection_ in yolo_output:
         ref, buffer = cv2.imencode('.jpg', detection_)
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
+
+
         
 @app.route('/webapp')
 def webapp():
     user_info=current_user.username
-    user_loc=current_user.location
+    
     user_mail = current_user.e_mail
-    return Response(generate_frames_web(path_x=1,user_info=user_info,user_loc=user_loc , user_mail=user_mail), mimetype='multipart/x-mixed-replace; boundary=frame')
+    CameraID = current_user.CameraID[0]
+    print(CameraID)
+    user_loc= get_location(camera_id=CameraID)
 
-def generate_frames_web2(path_x,user_info,user_loc , user_mail):
-    yolo_output = video_detection2(path_x,user_info,user_loc,user_mail)
+    
+    return Response(generate_frames_web(path_x=int(CameraID),user_info=user_info,user_loc=user_loc[0] , user_mail=user_mail,CameraID=CameraID, coroodinate=user_loc[1]), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+def generate_frames_web2(path_x,user_info,user_loc , user_mail,CameraID,coroodinate):
+    yolo_output = video_detection2(path_x,user_info,user_loc,user_mail,CameraID,coroodinate)
     for detection_ in yolo_output:
         ref, buffer = cv2.imencode('.jpg', detection_)
         frame = buffer.tobytes()
@@ -51,9 +74,14 @@ def generate_frames_web2(path_x,user_info,user_loc , user_mail):
 @app.route('/webapp2')
 def webapp2():
     user_info=current_user.username
-    user_loc=current_user.location
+ 
     user_mail = current_user.e_mail
-    return Response(generate_frames_web2(path_x=1,user_info=user_info,user_loc=user_loc , user_mail=user_mail), mimetype='multipart/x-mixed-replace; boundary=frame')
+    CameraID = current_user.CameraID[1]
+    print(CameraID)
+    user_loc= get_location(camera_id=CameraID)
+
+    print(CameraID)
+    return Response(generate_frames_web2(path_x=int(CameraID),user_info=user_info,user_loc=user_loc[0] , user_mail=user_mail,CameraID=CameraID,coroodinate=user_loc[1]), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 
@@ -153,7 +181,8 @@ def signup():
             user_to_create = User(username=form.username.data,
                                 password=form.password.data,
                                 location=form.location.data ,
-                                e_mail=form.e_mail.data
+                                e_mail=form.e_mail.data,
+                                CameraID = form.CameraID.data  
                                 )
             db.session.add(user_to_create)
             db.session.commit()

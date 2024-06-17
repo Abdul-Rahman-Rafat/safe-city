@@ -16,8 +16,7 @@ class User(db.Model,UserMixin):
     password_hash = db.Column(db.String(length=60), nullable=False)
     location = db.Column(db.String(length=60), nullable=True)
     e_mail = db.Column(db.String(length=50), nullable=False, unique=True)
-    camera_id = db.Column(db.Integer()) #unique=True or False ?
-    
+    CameraID = db.Column(db.String(length=10), nullable=False)
     #relationship between User and Snapshots
     alerts = db.relationship('Snapshots', backref='owned_user', lazy=True)
 
@@ -39,6 +38,7 @@ class Snapshots(db.Model):
     Detection_img_ref = db.Column(db.String(length=100), nullable=False)
     Detection_type = db.Column(db.String(length=30), nullable=False)
     Loc = db.Column(db.String(length=100), nullable=True)    
+    CameraID =   db.Column(db.Integer())
     Time = db.Column(db.DateTime(timezone=True),server_default=func.now())
 
 
@@ -50,6 +50,7 @@ class Snapshots(db.Model):
 class Camera(db.Model,UserMixin):
     camera_id = db.Column(db.Integer(), primary_key=True)
     limit_crowd = db.Column(db.Integer(), nullable=False)
+    Loc = db.Column(db.String(length=100), nullable=True)    
 
 
 

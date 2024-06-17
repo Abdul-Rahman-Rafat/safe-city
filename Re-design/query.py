@@ -6,7 +6,6 @@ cursor = conn.cursor()
 
 
 
-
 # Retrieve the last img_ref from the snapshots table
 def re_image_name():
     cursor.execute('SELECT Detection_img_ref FROM snapshots ORDER BY ROWID DESC LIMIT 1')
