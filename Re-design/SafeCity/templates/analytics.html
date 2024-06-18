@@ -1,183 +1,225 @@
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+
 {% extends 'parent-page1.html' %}
 
 {% block title %}
-    Analytics
+  Analytics
 {% endblock %}
 
 {% block content %}
-    <link rel="stylesheet" href="../static/analytics.css" />
-    
-    <h1>Accidents Statistics</h1>
-    <hr>
-    <div class="counters-container" style="display: flex; justify-content: space-around; width: 80%; margin: 20px auto;">
-        <div class="counter-card" style="text-align: center; padding: 20px; border-radius: 10px; background-color: #f8d7da; color: #721c24;">
-            <h3>Gun Detections</h3>
-            <div id="gunCounter" style="font-size: 2em; font-weight: bold;">0</div>
-            <p>Total Detections: <span id="gunTotal">0</span></p>
-        </div>
-        <div class="counter-card" style="text-align: center; padding: 20px; border-radius: 10px; background-color: #d4edda; color: #155724;">
-            <h3>People Detections</h3>
-            <div id="peopleCounter" style="font-size: 2em; font-weight: bold;">0</div>
-            <p>Total Detections: <span id="peopleTotal">0</span></p>
-        </div>
-        <div class="counter-card" style="text-align: center; padding: 20px; border-radius: 10px; background-color: #d1ecf1; color: #0c5460;">
-            <h3>Knife Detections</h3>
-            <div id="knifeCounter" style="font-size: 2em; font-weight: bold;">0</div>
-            <p>Total Detections: <span id="knifeTotal">0</span></p>
-        </div>
+  <link rel="stylesheet" href="../static/analytics.css" />
+   
+  <h1>Incidents Statistics</h1>
+  <hr>
+  <div class="background-image -variant-t2" style="display: flex; justify-content: space-between; width: 80%; margin: 0 auto; ">
+    <div class="shadow-lg p-3 mb-5 bg-white rounded" style="flex: 1; margin-right: 10px;">
+      <canvas id="snapshotChartLocation"></canvas>
     </div>
-
-    <div class="background-image -variant-t2" style="display: flex; justify-content: space-between; width: 80%; margin: 20px auto;">
-        <div class="shadow-lg p-3 mb-5 bg-white rounded" style="flex: 1; margin-right: 10px;">
-            <canvas id="snapshotChartLocation"></canvas>
-        </div>
-        <div class="shadow-lg p-3 mb-5 bg-white rounded" style="flex: 1; margin-left: 10px;">
-            <canvas id="snapshotChartDetectionType_bar"></canvas>
-        </div>
+    <div class="shadow-lg p-3 mb-5 bg-white rounded" style="flex: 1; margin-left: 10px;">
+      <canvas id="snapshotChartDetectionType_bar"></canvas>
     </div>
-    <br> <br>
+  </div>
+  <br>  <br>
 
-    <div class="shadow-lg p-3 mb-5 bg-white rounded" style="width: 80%; margin: 0 auto;">
-        <canvas id="snapshotChartTime" style="height: 400px; width: 100%;"></canvas>
+  <div class="shadow-lg p-3 mb-5 bg-white rounded" style="display: flex; flex-wrap: wrap; justify-content: space-between; width: 80%; margin: 0 auto;">
+    <div class="incident-counter shadow-lg p-3 mb-5 bg-white rounded" style="flex: 1; margin: 5px;">
+      <h3 class="counter-text">Crowd detection</h3>
+      <h1 class="counter-value">0</h1>
     </div>
+    <div class="incident-counter shadow-lg p-3 mb-5 bg-white rounded" style="flex: 1; margin: 5px;">
+      <h3 class="counter-text">Gun possession</h3>
+      <h1 class="counter-value">0</h1>
+    </div>
+    <div class="incident-counter shadow-lg p-3 mb-5 bg-white rounded" style="flex: 1; margin: 5px;">
+      <h3 class="counter-text">Knife possession</h3>
+      <h1 class="counter-value">0</h1>
+    </div>
+    <div class="incident-counter shadow-lg p-3 mb-5 bg-white rounded" style="flex: 1; margin: 5px;">
+      <h3>Fire incident</h3>
+      <h1 class="counter-value">0</h1>
+    </div>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        fetch('/get_snapshot_data')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('gunCounter').textContent = data.counts_gun;
-                document.getElementById('peopleCounter').textContent = data.counts_people;
-                document.getElementById('knifeCounter').textContent = data.counts_knife;
+  <div id="map" style="width: 80%; height: 500px; margin: 0 auto;"></div>
 
-                document.getElementById('gunTotal').textContent = data.total_gun;
-                document.getElementById('peopleTotal').textContent = data.total_people;
-                document.getElementById('knifeTotal').textContent = data.total_knife;
+  <div>
+    <label for="detectionTypeSelect">Select Detection Type:</label>
+    <select id="detectionTypeSelect">
+      <option value="person">Person</option>
+      <option value="gun">Gun</option>
+      <option value="knife">Knife</option>
+      <option value="fire">Fire</option>
+    </select>
+  </div>
 
-                // Chart for number of snapshots per location
-                const ctxLocation = document.getElementById('snapshotChartLocation').getContext('2d');
-                new Chart(ctxLocation, {
-                    type: 'bar',
-                    data: {
-                        labels: data.labels_location,
-                        datasets: [{
-                            label: 'Snapshot Counts (Location)',
-                            data: data.counts_location,
-                            backgroundColor: '#153448',
-                            borderColor: 'white',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                display: true,
-                                beginAtZero: true
-                            },
-                            x: {
-                                color: 'black',
-                                ticks: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    color: 'black',
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    fetch('/get_snapshot_data')
+      .then(response => response.json())
+      .then(data => {
+        const locationLabels = data.labels_location;
+        const detectionTypeLabels = data.labels_detection_type;
+        const totalCount = data.counts_detection_type.reduce((a, b) => a + b, 0);
 
-                // Chart for number of snapshots per day (last 7 days)
-                const ctxTime = document.getElementById('snapshotChartTime').getContext('2d');
-                new Chart(ctxTime, {
-                    type: 'bar',
-                    data: {
-                        labels: data.labels_time.slice(-7),
-                        datasets: [{
-                            label: 'Snapshot Counts (Last 7 Days)',
-                            data: data.counts_time.slice(-7),
-                            backgroundColor: '#0E46A3',
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                display: true,
-                                beginAtZero: true
-                            },
-                            x: {
-                                color: 'black',
-                                ticks: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    color: 'black',
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
+        // Function to get counts for a specific detection type (people, gun, knife, fire)
+        function getDetectionTypeCount(detectionType) {
+          const index = detectionTypeLabels.indexOf(detectionType);
+          return index !== -1 ? data.counts_detection_type[index] : 0;
+        }
 
-                // Chart for number of snapshots per detection type (bar)
-                const ctxDetectionTypeBar = document.getElementById('snapshotChartDetectionType_bar').getContext('2d');
-                new Chart(ctxDetectionTypeBar, {
-                    type: 'bar',
-                    data: {
-                        labels: data.labels_detection_type,
-                        datasets: [{
-                            label: 'Snapshot Counts (Detection Type)',
-                            data: data.counts_detection_type,
-                            backgroundColor: ['#FF6384', '#36A2EB', '#4BC0C0'],
-                            borderColor: 'white',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                display: true,
-                                beginAtZero: true
-                            },
-                            x: {
-                                color: 'black',
-                                ticks: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    color: 'black',
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            });
-    </script>
+        // Incident counter elements
+        const peopleCount = document.querySelector('.incident-counter:nth-child(1) .counter-value');
+        const gunCount = document.querySelector('.incident-counter:nth-child(2) .counter-value');
+        const knifeCount = document.querySelector('.incident-counter:nth-child(3) .counter-value');
+        const fireCount = document.querySelector('.incident-counter:nth-child(4) .counter-value');
+
+        // Set incident counts
+        peopleCount.textContent = getDetectionTypeCount('person');
+        gunCount.textContent = getDetectionTypeCount('gun');
+        knifeCount.textContent = getDetectionTypeCount('knife');
+        fireCount.textContent = getDetectionTypeCount('fire');
+
+        // Chart for number of snapshots per location (stacked bar chart)
+        const ctxLocation = document.getElementById('snapshotChartLocation').getContext('2d');
+        const locationDatasets = [];
+        const detectionTypes = ['person', 'gun', 'knife', 'fire'];
+
+        for (const detectionType of detectionTypes) {
+          const detectionData = data.counts_detection_type.map(count => {
+            const detectionCount = getDetectionTypeCount(detectionType);
+            return detectionCount > 0 ? detectionCount : null;
+          });
+          locationDatasets.push({
+            label: detectionType,
+            data: detectionData,
+            backgroundColor: detectionType === 'person' ? 'lightblue' : (
+              detectionType === 'gun' ? 'red' : (
+                detectionType === 'knife' ? 'orange' : 'yellow'
+              )
+            ),
+            borderColor: 'white',
+            borderWidth: 1,
+            stack: 'detectionTypes'
+          });
+        }
+
+        new Chart(ctxLocation, {
+          type: 'bar',
+          data: {
+            labels: locationLabels,
+            datasets: locationDatasets
+          },
+          options: {
+            scales: {
+              y: {
+                stacked: true,
+                display: false,
+                beginAtZero: true
+              },
+              x: {
+                color: 'black',
+                ticks: {
+                  font: {
+                    weight: 'bold'
+                  }
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                labels: {
+                  color: 'black',
+                  weight: 'bold'
+                }
+              }
+            }
+          }
+        });
+
+        // Chart for number of snapshots per detection type (bar chart)
+        const ctxDetectionType = document.getElementById('snapshotChartDetectionType_bar').getContext('2d');
+        new Chart(ctxDetectionType, {
+          type: 'bar',
+          data: {
+            labels: detectionTypeLabels,
+            datasets: [{
+              label: 'Incident Counts',
+              data: data.counts_detection_type,
+              backgroundColor: [
+                'lightblue',
+                'red',
+                'orange',
+                'yellow'
+              ],
+              borderColor: 'white',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                display: false,
+                beginAtZero: true
+              },
+              x: {
+                color: 'black',
+                ticks: {
+                  font: {
+                    weight: 'bold'
+                  }
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                labels: {
+                  color: 'black',
+                  weight: 'bold'
+                }
+              }
+            }
+          }
+        });
+
+        // Leaflet map setup
+        const map = L.map('map').setView([30.0075, 31.3065], 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 18,
+          attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // Heatmap setup
+        const heatmapData = {
+          person: [
+            [30.006831407362444, 31.30354670803956, data.count_camera_id_0_person],
+            [30.010445275863656, 31.303651797253742, data.count_camera_id_1_person]
+          ],
+          gun: [
+            [30.006831407362444, 31.30354670803956, data.count_camera_id_0_gun],
+            [30.010445275863656, 31.303651797253742, data.count_camera_id_1_gun]
+          ],
+          knife: [
+            [30.006831407362444, 31.30354670803956, data.count_camera_id_0_knife],
+            [30.010445275863656, 31.303651797253742, data.count_camera_id_1_knife]
+          ],
+          fire: [
+            [30.006831407362444, 31.30354670803956, data.count_camera_id_0_fire],
+            [30.010445275863656, 31.303651797253742, data.count_camera_id_1_fire]
+          ]
+        };
+
+        const initialHeatmapType = 'person'; // Initial heatmap type
+
+        const heatmap = L.heatLayer(heatmapData[initialHeatmapType], { radius: 25 }).addTo(map);
+
+        // Event listener for dropdown change
+        document.getElementById('detectionTypeSelect').addEventListener('change', function() {
+          const selectedDetectionType = this.value;
+          heatmap.setLatLngs(heatmapData[selectedDetectionType]);
+        });
+      });
+  </script>
 {% endblock %}

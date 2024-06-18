@@ -11,6 +11,38 @@ import cv2
 from SafeCity.YOLO_Video import video_detection , video_detection2
 
 
+def getcounts(count,camera):
+    # Construct the SQL UPDATE statement
+    conn = sqlite3.connect(r'C:\Users\yassi\Desktop\safecity site new\safe-city\Re-design\instance\SafeCity.db')
+    cursor = conn.cursor()
+    update_query = """
+        UPDATE camera
+        SET limit_crowd = ?
+        WHERE camera_id = ?
+    """
+
+    # Execute the update query
+    cursor.execute(update_query, (count, camera))
+
+    # Commit the changes to the database
+    conn.commit()
+
+    # Close the cursor and connection
+    cursor.close()
+    conn.close()
+
+def get_limit(camera_id):
+    # Connect to the SQLite database
+    conn = sqlite3.connect(r'C:\Users\yassi\Desktop\safecity site new\safe-city\Re-design\instance\SafeCity.db')
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT limit_crowd FROM camera WHERE camera_id = ?', (camera_id,))
+    limit = cursor.fetchone()
+
+    # Close the connection
+    conn.close()
+    return limit[0]
+
 def get_location(camera_id):
     # Connect to the SQLite database
     conn = sqlite3.connect(r'C:\Users\yassi\Desktop\safecity site new\safe-city\Re-design\instance\SafeCity.db')
@@ -38,9 +70,10 @@ def get_location(camera_id):
 #         flash("New snapshots have been detected!", category="info")
 #         previousAlertCount = currentAlertCount
     
-
+limit1 =  get_limit(0)
 def generate_frames_web(path_x,user_info,user_loc , user_mail , CameraID , coroodinate):
-    yolo_output = video_detection(path_x,user_info,user_loc,user_mail, CameraID,coroodinate)
+
+    yolo_output = video_detection(path_x,user_info,user_loc,user_mail, CameraID,coroodinate,limit1)
     for detection_ in yolo_output:
         ref, buffer = cv2.imencode('.jpg', detection_)
         frame = buffer.tobytes()
@@ -200,12 +233,22 @@ def signup():
          abort(403)
 
 
-@app.route("/livestream")
-@app.route("/templates/livestream")
-@app.route("/update/livestream")
+@app.route('/handle_people_count', methods=['POST'])
+@login_required
+def handle_people_count():
+    people_count_webapp1 = request.form.get('people_count_webapp1')
+    getcounts(people_count_webapp1, 0)
+   
+    
+
+    # Redirect back to the livestream page
+    return redirect(url_for('live'))
+
+@app.route('/livestream')
+@app.route('/templates/livestream')
+@app.route('/update/livestream')
 @login_required
 def live():
-    #get_flash_alert()    # flash to see the notification
     return render_template('livestream.html')
 
 @app.route("/analytics")
@@ -290,14 +333,15 @@ from datetime import datetime, timedelta
 @login_required
 def get_snapshot_data():
     # Check if the current user is an admin
-    if current_user.username=='admin':
-        # Fetch snapshots for all users
+    if current_user.username == 'admin':
+    # Fetch all snapshots
         snapshot_data_all_users = Snapshots.query.all()
     else:
-        # Fetch snapshots associated with the current user
+    # Fetch snapshots associated with the current user
         snapshot_data_all_users = current_user.alerts
-    
-    # Count the number of snapshots per location
+
+
+    # Countthe number of snapshots per location
     snapshot_counts_location = {}
     for snapshot in snapshot_data_all_users:
         loc = snapshot.Loc
@@ -305,10 +349,10 @@ def get_snapshot_data():
             snapshot_counts_location[loc] += 1
         else:
             snapshot_counts_location[loc] = 1
-    
+
     # Fetch timestamps for all snapshots
     snapshot_data_time = db.session.query(Snapshots.Time).all()
-    
+
     # Count the number of snapshots per day
     snapshot_counts_time = {}
     for snapshot_time in snapshot_data_time:
@@ -318,8 +362,7 @@ def get_snapshot_data():
             snapshot_counts_time[day_key] += 1
         else:
             snapshot_counts_time[day_key] = 1
-    
-    
+
     # Count the number of snapshots per detection type
     snapshot_counts_detection_type = {}
     for snapshot in snapshot_data_all_users:
@@ -328,6 +371,50 @@ def get_snapshot_data():
             snapshot_counts_detection_type[detection_type] += 1
         else:
             snapshot_counts_detection_type[detection_type] = 1
+
+    # Count the number of snapshots per CameraID -> 0 and CameraID -> 1
+    count_camera_id_0 = 0
+    count_camera_id_1 = 0
+    for snapshot in snapshot_data_all_users:
+        if snapshot.CameraID == 0:
+            count_camera_id_0 += 1
+        elif snapshot.CameraID == 1:
+            count_camera_id_1 += 1
+
+
+
+  # Count the number of snapshots per CameraID -> 0 and CameraID -> 1
+    count_camera_id_0_fire = 0
+    count_camera_id_1_fire = 0
+    count_camera_id_0_gun = 0
+    count_camera_id_1_gun = 0
+    count_camera_id_0_person = 0
+    count_camera_id_1_person = 0
+    count_camera_id_0_knife = 0
+    count_camera_id_1_knife = 0
+
+    for snapshot in snapshot_data_all_users:
+        if snapshot.CameraID == 0:
+            if snapshot.Detection_type == 'fire':
+                count_camera_id_0_fire += 1
+            if snapshot.Detection_type == 'gun':
+                count_camera_id_0_gun += 1
+            if snapshot.Detection_type == 'person':
+                count_camera_id_0_person += 1
+            if snapshot.Detection_type == 'knife':
+                count_camera_id_0_knife += 1
+        elif snapshot.CameraID == 1:
+            if snapshot.Detection_type == 'fire':
+                count_camera_id_1_fire += 1
+            if snapshot.Detection_type == 'gun':
+                count_camera_id_1_gun += 1
+            if snapshot.Detection_type == 'person':
+                count_camera_id_1_person += 1
+            if snapshot.Detection_type == 'knife':
+                count_camera_id_1_knife += 1
+
+
+
     # Generate labels for the last 7 days
     today = datetime.utcnow().date()
     labels_time = [(today - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(6, -1, -1)]
@@ -335,11 +422,24 @@ def get_snapshot_data():
     # Create counts for each label, defaulting to 0 if no data for a day
     counts_time = [snapshot_counts_time.get(label, 0) for label in labels_time]
 
-
-
-    return jsonify(labels_location=list(snapshot_counts_location.keys()), counts_location=list(snapshot_counts_location.values()), labels_time=labels_time, counts_time=counts_time 
-                   ,labels_detection_type=list(snapshot_counts_detection_type.keys()), counts_detection_type=list(snapshot_counts_detection_type.values()))
-
+    return jsonify(
+        labels_location=list(snapshot_counts_location.keys()),
+        counts_location=list(snapshot_counts_location.values()),
+        labels_time=labels_time,
+        counts_time=counts_time,
+        labels_detection_type=list(snapshot_counts_detection_type.keys()),
+        counts_detection_type=list(snapshot_counts_detection_type.values()),
+        count_camera_id_0=count_camera_id_0,
+        count_camera_id_1=count_camera_id_1,
+        count_camera_id_0_fire=count_camera_id_0_fire,
+        count_camera_id_1_fire=count_camera_id_1_fire,
+        count_camera_id_0_knife=count_camera_id_0_knife,
+        count_camera_id_1_knife=count_camera_id_1_knife,
+        count_camera_id_0_gun=count_camera_id_0_gun,
+        count_camera_id_1_gun=count_camera_id_1_gun,
+        count_camera_id_0_person=count_camera_id_0_person,
+        count_camera_id_1_person=count_camera_id_1_person
+    )
 
 
 
