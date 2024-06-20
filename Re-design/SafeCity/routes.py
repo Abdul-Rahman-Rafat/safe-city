@@ -70,9 +70,9 @@ def get_location(camera_id):
 #         flash("New snapshots have been detected!", category="info")
 #         previousAlertCount = currentAlertCount
     
-limit1 =  get_limit(0)
+limit1 =  0
 def generate_frames_web(path_x,user_info,user_loc , user_mail , CameraID , coroodinate):
-
+    limit1 = get_limit(0) 
     yolo_output = video_detection(path_x,user_info,user_loc,user_mail, CameraID,coroodinate,limit1)
     for detection_ in yolo_output:
         ref, buffer = cv2.imencode('.jpg', detection_)
@@ -88,7 +88,7 @@ def webapp():
     user_info=current_user.username
     
     user_mail = current_user.e_mail
-    CameraID = current_user.CameraID[0]
+    CameraID = current_user.CameraID[1]
     print(CameraID)
     user_loc= get_location(camera_id=CameraID)
 
@@ -109,7 +109,7 @@ def webapp2():
     user_info=current_user.username
  
     user_mail = current_user.e_mail
-    CameraID = current_user.CameraID[1]
+    CameraID = current_user.CameraID[0]
     print(CameraID)
     user_loc= get_location(camera_id=CameraID)
 

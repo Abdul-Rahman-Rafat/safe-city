@@ -4,6 +4,12 @@ import sqlite3
 conn = sqlite3.connect(r'C:\Users\yassi\Desktop\safecity site new\safe-city\Re-design\instance\SafeCity.db')
 cursor = conn.cursor()
 
+# Delete all rows from the snapshots table
+cursor.execute('DELETE FROM snapshots')
+
+# Commit the changes and close the connection
+conn.commit()
+conn.close()
 
 
 
