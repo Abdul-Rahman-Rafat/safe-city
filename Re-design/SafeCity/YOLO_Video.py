@@ -2,7 +2,6 @@ from datetime import datetime
 from ultralytics import YOLO
 import cv2
 import math
-import threading
 from SafeCity.models import Snapshots
 from SafeCity import db
 from SafeCity import app
@@ -14,13 +13,6 @@ output_path = Path.cwd()
 
 img_name = re_image_name()
 img_name = int(img_name) + 1
-
-def send_alert(user_mail, file_path, loc, coroodinate, user, CameraID,class_name):
-    with app.app_context():
-        send_mail(receiver_mail=user_mail, image_path=file_path, incident_type=class_name, location=loc, coroodinate=coroodinate)
-        snapshot = Snapshots(Detection_img_ref=img_name, Detection_type=class_name, Loc=loc, Time=datetime.now(), Alert_sentTo=user, CameraID=CameraID)
-        db.session.add(snapshot)
-        db.session.commit()
 
 def video_detection(path_x, user, loc, user_mail, CameraID, coroodinate, limit):
     global img_name
@@ -69,8 +61,11 @@ def video_detection(path_x, user, loc, user_mail, CameraID, coroodinate, limit):
                 cv2.imwrite(file_path, frame)
                 last_saved_time = current_time
                 
-                # Start a new thread to send the email and save the snapshot
-                threading.Thread(target=send_alert, args=(user_mail, file_path, loc, coroodinate, user, CameraID,class_name)).start()
+                with app.app_context():
+                    send_mail(receiver_mail=user_mail, image_path=file_path, incident_type='person', location=loc, coroodinate=coroodinate)
+                    snapshot = Snapshots(Detection_img_ref=img_name, Detection_type='person', Loc=loc, Time=datetime.now(), Alert_sentTo=user, CameraID=CameraID)
+                    db.session.add(snapshot)
+                    db.session.commit()
                 img_name += 1
         
         # Display the person count and overlimit warning if necessary
@@ -80,6 +75,7 @@ def video_detection(path_x, user, loc, user_mail, CameraID, coroodinate, limit):
             cv2.putText(frame, f"People: {person_count}", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
 
         yield frame
+
 
 
 def video_detection2(path_x, user, loc, user_mail, CameraID, coroodinate):

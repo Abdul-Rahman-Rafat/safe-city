@@ -4,13 +4,6 @@ import sqlite3
 conn = sqlite3.connect(r'C:\Users\yassi\Desktop\safecity site new\safe-city\Re-design\instance\SafeCity.db')
 cursor = conn.cursor()
 
-# Delete all rows from the snapshots table
-cursor.execute('DELETE FROM snapshots')
-
-# Commit the changes and close the connection
-conn.commit()
-conn.close()
-
 
 
 # Retrieve the last img_ref from the snapshots table
@@ -23,7 +16,7 @@ def re_image_name():
     else:
         last_img_ref = 0  # Set last_img_ref to 0 if it's None (table is empty)
 
-    print("Last img_ref:", last_img_ref)
+
 
     # Close the connection
     conn.close()
