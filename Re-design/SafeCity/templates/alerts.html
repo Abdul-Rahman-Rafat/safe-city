@@ -23,8 +23,9 @@
 <div class="navbar shadow-lg navbar-dark bg-dark" style="display: flex; align-items: center; width: 95%; border-radius: 16px; padding-top: 30px ; padding-bottom: 30px;">
     <input class="form-control" id="Det" type="text" placeholder="Search by Detection type (Weapon - Fire - Accident - Crowd)" style="margin-right: 15px; margin-left: 15px;">
     
-    {% if current_user.username == "admin" %}
+ 
     <input class="form-control" id="loc" type="text" placeholder="Search by Location" style="margin-right: 15px;">
+    {% if current_user.username == "admin" %}
     <input class="form-control" id="user_rec" type="text" placeholder="Search by Receiver " style="margin-right: 15px;">
     {% endif %}
 
@@ -44,8 +45,9 @@
               <th scope="col"> Snapshot </th>
               <th scope="col">Detection</th>
              
-              {% if current_user.username == "admin" %}
+              
               <th scope="col">Location</th>
+              {% if current_user.username == "admin" %}
               <th scope="col">Alert sent to </th>
               {% endif %}
 
@@ -62,8 +64,9 @@
                   <td class="w-25"><img class="rounded mx-auto d-block" src='../static/used_images/{{snap.Detection_img_ref}}.png'/></td>  
                   <td>{{ snap.Detection_type }}</td>
                   
-                    {% if current_user.username == "admin" %}
+                   
                     <td>{{ snap.Loc }}</td>
+                    {% if current_user.username == "admin" %}
                     <td>{{ snap.Alert_sentTo }}</td>            
                     {% endif%}
 

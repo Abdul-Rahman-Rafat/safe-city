@@ -8,10 +8,10 @@ from SafeCity.models import User , Snapshots , Camera
 from SafeCity.forms import RegisterForm , LoginForm 
 from flask_login import login_user , logout_user , login_required , current_user
 import cv2
-from SafeCity.YOLO_Video import video_detection , video_detection2
+from SafeCity.YOLO_Video import model
 
 
-def getcounts(count,camera):
+def setcounts(count,camera):
     # Construct the SQL UPDATE statement
     conn = sqlite3.connect(r'C:\Users\yassi\Desktop\safecity site new\safe-city\Re-design\instance\SafeCity.db')
     cursor = conn.cursor()
@@ -19,6 +19,7 @@ def getcounts(count,camera):
         UPDATE camera
         SET limit_crowd = ?
         WHERE camera_id = ?
+        
     """
 
     # Execute the update query
@@ -28,6 +29,20 @@ def getcounts(count,camera):
     conn.commit()
 
     # Close the cursor and connection
+    cursor.close()
+    conn.close()
+
+
+def setmodel_type(camera, model_type):
+    conn = sqlite3.connect(r'C:\Users\yassi\Desktop\safecity site new\safe-city\Re-design\instance\SafeCity.db')
+    cursor = conn.cursor()
+    update_query = """
+        UPDATE camera
+        SET model_type = ?
+        WHERE camera_id = ?
+    """
+    cursor.execute(update_query, (model_type, camera))
+    conn.commit()
     cursor.close()
     conn.close()
 
@@ -42,6 +57,19 @@ def get_limit(camera_id):
     # Close the connection
     conn.close()
     return limit[0]
+
+
+def get_model_type(model_type):
+    
+    conn = sqlite3.connect(r'C:\Users\yassi\Desktop\safecity site new\safe-city\Re-design\instance\SafeCity.db')
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT model_type FROM camera WHERE camera_id = ?', (model_type,))
+    model_type_ = cursor.fetchone()
+
+    
+    conn.close()
+    return model_type_[0]
 
 def get_location(camera_id):
     # Connect to the SQLite database
@@ -71,9 +99,17 @@ def get_location(camera_id):
 #         previousAlertCount = currentAlertCount
     
 limit1 =  0
+limit2 = 0 
+model_type_ = ""
+model_type_2 = ""
+
 def generate_frames_web(path_x,user_info,user_loc , user_mail , CameraID , coroodinate):
     limit1 = get_limit(0) 
-    yolo_output = video_detection(path_x,user_info,user_loc,user_mail, CameraID,coroodinate,limit1)
+    model_type_ = get_model_type(0)
+    if model_type_ == "Gun Model":
+        limit1 = -1
+
+    yolo_output = model(path_x,user_info,user_loc,user_mail, CameraID,coroodinate,limit1,model_type=model_type_)
     for detection_ in yolo_output:
         ref, buffer = cv2.imencode('.jpg', detection_)
         frame = buffer.tobytes()
@@ -96,7 +132,12 @@ def webapp():
     return Response(generate_frames_web(path_x=int(CameraID),user_info=user_info,user_loc=user_loc[0] , user_mail=user_mail,CameraID=CameraID, coroodinate=user_loc[1]), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 def generate_frames_web2(path_x,user_info,user_loc , user_mail,CameraID,coroodinate):
-    yolo_output = video_detection2(path_x,user_info,user_loc,user_mail,CameraID,coroodinate)
+    limit2 = get_limit(1)
+    model_type_2 =get_model_type(1)  
+    if model_type_2 == "Gun Model":
+        limit2 = -1
+    
+    yolo_output = model(path_x,user_info,user_loc,user_mail,CameraID,coroodinate,limit2,model_type= model_type_2)
     for detection_ in yolo_output:
         ref, buffer = cv2.imencode('.jpg', detection_)
         frame = buffer.tobytes()
@@ -237,8 +278,18 @@ def signup():
 @login_required
 def handle_people_count():
     people_count_webapp1 = request.form.get('people_count_webapp1')
-    getcounts(people_count_webapp1, 0)
-   
+    people_count_webapp2 = request.form.get('people_count_webapp2')
+    model_webapp1 = request.form.get('model_webapp1')
+    model_webapp2 = request.form.get('model_webapp2')
+
+    print(model_webapp1)
+    print(model_webapp2)
+
+
+    setmodel_type(0, model_webapp1)
+    setmodel_type(1,model_webapp2)
+    setcounts(people_count_webapp1 , 0)
+    setcounts(people_count_webapp2,1)
     
 
     # Redirect back to the livestream page

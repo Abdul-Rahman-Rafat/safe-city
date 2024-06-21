@@ -6,13 +6,14 @@ from email.mime.image import MIMEImage
 def send_mail(receiver_mail, image_path , incident_type , location,coroodinate):
     email = 'safecityfcis@gmail.com'
     password = 'jvhqfhhfszbhgtys'
-    
+    coroodinate = coroodinate.replace(" ", "")
     subject = "Incident detected"
     message = (
         "An incident is detected in the system. Please check the alerts section.\n\n"
-        f"Type: {incident_type}\n"
-        f"Location: {location}"
-        f"coordinates:{coroodinate}"
+        f"Type:  {incident_type}\n"
+        f"Location:  {location}"
+        
+        f"  https://maps.google.com/?q={coroodinate}"
     )
 
     msg = MIMEMultipart()
