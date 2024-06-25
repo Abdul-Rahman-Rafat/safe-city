@@ -2,7 +2,7 @@ from datetime import datetime
 from ultralytics import YOLO
 import cv2
 import math
-from SafeCity.models import Snapshots
+from SafeCity.models import Snapshots,User
 from SafeCity import db
 from SafeCity import app
 from pathlib import Path
@@ -73,6 +73,8 @@ def model(path_x, user, loc, user_mail, CameraID, coroodinate, limit, model_type
                         send_mail(receiver_mail=user_mail, image_path=file_path, incident_type='person', location=loc, coroodinate=coroodinate)
                         snapshot = Snapshots(Detection_img_ref=img_name, Detection_type='person', Loc=loc, Time=datetime.now(), Alert_sentTo=user, CameraID=CameraID)
                         db.session.add(snapshot)
+                        usersnamp = User.query.filter_by(username=user).first()
+                        usersnamp.unread_alerts_count+=1
                         db.session.commit()
                     img_name += 1
             

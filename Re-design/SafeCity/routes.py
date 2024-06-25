@@ -213,7 +213,8 @@ def admin():
 def snapshot():
 
     #get_flash_alert()    # flash to see the notification
-
+    current_user.unread_alerts_count=0
+    db.session.commit() 
 
     # Fetch all alerts
     snaps = Snapshots.query.all()
@@ -311,16 +312,15 @@ def analysis():
     return render_template("analytics.html", current_page='analytics')
 
 
+
 #alert_count
 @app.route("/get_alert_count")
 @login_required
 def get_alert_count():
-    if current_user.username == "admin":
-        # If the current user is admin, fetch all alerts
-        alerts_count = len(Snapshots.query.all())
-    else:
-        alerts_count = Snapshots.query.filter_by(Alert_sentTo=current_user.username).count()
+ 
+    alerts_count = current_user.unread_alerts_count
     return jsonify(alertCount=alerts_count)
+
 
 
 @app.route("/delete_user/<int:user_id>", methods=['DELETE'])

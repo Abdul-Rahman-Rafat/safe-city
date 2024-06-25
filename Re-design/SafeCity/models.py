@@ -19,6 +19,7 @@ class User(db.Model,UserMixin):
     CameraID = db.Column(db.String(length=10), nullable=False)
     #relationship between User and Snapshots
     alerts = db.relationship('Snapshots', backref='owned_user', lazy=True)
+    unread_alerts_count = db.Column(db.Integer(), default=0)  # New column for tracking unread alerts
 
     @property
     def password(self):
