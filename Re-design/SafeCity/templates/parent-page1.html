@@ -59,17 +59,22 @@
           />
          <div class="parent-page1-headnav">
         <nav class="navigation-links-nav navigation-links-root-class-name12">
-          <a href="{{ url_for('home')}}" class="navigation-links-nav1">
+          <a href="{{ url_for('home')}}" class="navigation-links-nav1"
+          {% if current_page == 'livestream' %}target="_blank"{% endif %}>
             <span>Home</span>
           </a>
-          <a href="alerts" class="navigation-links-nav2">
+          <a href="alerts" class="navigation-links-nav2"
+          {% if current_page == 'livestream' %}target="_blank"{% endif %}    
+          >
             <span>Alerts</span>
           </a>
           <span class="navigation-links-alertcount"><span id="alertCount">{{ alerts_count }}</span></span>
-          <a href="analytics" class="navigation-links-nav3">
+          <a href="analytics" class="navigation-links-nav3"
+          {% if current_page == 'livestream' %}target="_blank"{% endif %}>
             <span>Analytics</span>
           </a>
-          <a href="livestream" class="navigation-links-nav4" target="_blank">
+          <a href="livestream" class="navigation-links-nav4"
+          {% if current_page == 'livestream' %}target="_blank"{% endif %}>
             <span>Live stream</span>
           </a>
         </nav>
@@ -79,7 +84,9 @@
       <div class="parent-page1-logregbtn">
         <a class="nav-link2"> Welcome, {{ current_user.username }}</a>
 
-        <a href="admin" class="parent-page1-mod button">Modify</a>
+        <a href="admin" class="parent-page1-mod button"
+        {% if current_page == 'livestream' %}target="_blank"{% endif %}
+        >Modify</a>
 
         {% if current_user.is_authenticated %}
         <form id="logoutForm" action="{{ url_for('logout') }}" method="post">
@@ -88,6 +95,7 @@
         {% endif %}
         
 
+       
        
 
 

@@ -189,7 +189,7 @@ def login():
 def home():
     #get_flash_alert()    # flash to see the notification
     alerts_count = len(Snapshots.query.all())
-    return render_template("home.html")
+    return render_template("home.html", current_page='home')
 
 @app.route("/admin")
 @app.route("/templates/admin")
@@ -201,7 +201,7 @@ def admin():
     if current_user.username == 'admin':
         alerts_count = len(Snapshots.query.all())
         users = User.query.all()
-        return render_template("admin.html", users=users)
+        return render_template("admin.html", users=users, current_page='admin')
 
     else:
         abort(403)
@@ -227,7 +227,7 @@ def snapshot():
         return render_template("alerts.html",snaps = snaps)
     else:
          snaps=Snapshots.query.filter_by(Alert_sentTo=current_user.username)
-         return render_template("alerts.html",snaps = snaps )
+         return render_template("alerts.html",snaps = snaps, current_page='alerts'  )
    
 
 @app.route("/delete_snapshot/<int:snapshot_id>", methods=['DELETE'])
@@ -268,7 +268,7 @@ def signup():
                 flash(f'There was an error with creating a user: {err_msg}', category='danger')
         
         
-        return render_template("signup.html",form=form)
+        return render_template("signup.html",form=form, current_page='signup')
 
     else:
          abort(403)
@@ -300,7 +300,7 @@ def handle_people_count():
 @app.route('/update/livestream')
 @login_required
 def live():
-    return render_template('livestream.html')
+    return render_template('livestream.html', current_page='livestream')
 
 @app.route("/analytics")
 @app.route("/templates/analytics")
@@ -308,7 +308,7 @@ def live():
 @login_required
 def analysis():
     #get_flash_alert()    # flash to see the notification
-    return render_template("analytics.html")
+    return render_template("analytics.html", current_page='analytics')
 
 
 #alert_count
@@ -369,12 +369,12 @@ def update(id):
 		try:
 			db.session.commit()
 			flash("User Updated Successfully!",category='success')
-			return render_template("update.html", form=form,name_to_update = name_to_update, id=id)
+			return render_template("update.html", form=form,name_to_update = name_to_update, id=id, current_page='update')
 		except:
 			flash("Error!  Looks like there was a problem...try again!" , category='danger')
-			return render_template("update.html", form=form,name_to_update = name_to_update,id=id)
+			return render_template("update.html", form=form,name_to_update = name_to_update,id=id, current_page='update')
 	else:
-		return render_template("update.html", form=form,name_to_update = name_to_update,id = id)
+		return render_template("update.html", form=form,name_to_update = name_to_update,id = id, current_page='update')
 
     
 from datetime import datetime, timedelta
