@@ -8,35 +8,38 @@ from SafeCity import app
 from pathlib import Path
 from query import re_image_name
 from mail import send_mail
+import tensorrt as trt
+
 
 output_path = Path.cwd()
 
 img_name = re_image_name()
 img_name = int(img_name) + 1
 
-
-
-
-def model(path_x, user, loc, user_mail, CameraID, coroodinate, limit,model_type):
+def model(path_x, user, loc, user_mail, CameraID, coroodinate, limit, model_type):
     if model_type == 'Crowd Model':
         global img_name
-        cap = cv2.VideoCapture(path_x)
+        cap = cv2.VideoCapture(r'c:\Users\yassi\Downloads\Untitled video - Made with Clipchamp.mp4')
         
         model = YOLO(r"c:\Users\yassi\Desktop\safecity systems\client_side\ui\crowd model\crowd59rp.pt")
         classNames1 = ['person']
         
         last_saved_time = datetime.now()
+         
+        frame_skip_interval = 1  # Process every 5th frame
+        frame_count = 0
 
         while True:
             ret, frame = cap.read()
             if not ret:
                 break
 
-            # Resize the frame to 640x360
-            frame = cv2.resize(frame, (640, 360))
+            frame_count += 1
+            if frame_count % frame_skip_interval != 0:
+                continue
 
             # Perform object detection on the resized frame
-            results = model(frame, imgsz=640, save=False, conf=0.4)
+            results = model(frame, imgsz=1024, save=False, conf=0.4, device='cuda')
             
             person_count = 0
             
@@ -50,16 +53,17 @@ def model(path_x, user, loc, user_mail, CameraID, coroodinate, limit,model_type)
                     class_name = classNames1[cls]
                     label = f'{class_name}{conf}'
                     
-                    if class_name == 'person' and conf > 0.65:
+                    if class_name == 'person' and conf > 0.4:
                         color = (0, 255, 0)
                         person_count += 1
-                        cv2.circle(frame, (center_x, center_y), 10, color, 2)
-                        cv2.putText(frame, label, (x1, y1 - 2), 0, 1, [255, 255, 255], thickness=1, lineType=cv2.LINE_AA)
-            
+                        
+                        # Draw a small red dot at the center of the person
+                        cv2.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)  # Red dot
+                        
             if person_count >= limit:
                 current_time = datetime.now()
                 time_diff = (current_time - last_saved_time).total_seconds()
-                if time_diff >= 10:
+                if time_diff >= 20:
                     file_path = f'{output_path}\\Re-design\\SafeCity\\static\\used_images\\{img_name}.png'
                     print(file_path)
                     cv2.imwrite(file_path, frame)
@@ -79,25 +83,32 @@ def model(path_x, user, loc, user_mail, CameraID, coroodinate, limit,model_type)
                 cv2.putText(frame, f"People: {person_count}", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
 
             yield frame
+
+    
     elif model_type == 'Gun Model':
-        
-        cap = cv2.VideoCapture(path_x)
+        cap = cv2.VideoCapture(r'c:\Users\yassi\Downloads\Disturbing new footage shows Salvador Ramos in Uvalde school, cops running _ New York Post.mp4')
         
         model = YOLO(r"c:\Users\yassi\Downloads\140e (1).pt")
         classNames1 = ['fire', 'knife', 'gun']
         
         last_saved_time = datetime.now()
+        frame_skip_interval = 5  # Process every 5th frame
+        frame_count = 0
 
         while True:
             ret, frame = cap.read()
             if not ret:
                 break
+            
+            frame_count += 1
+            if frame_count % frame_skip_interval != 0:
+                continue
 
             # Resize the frame to 640x360
             frame = cv2.resize(frame, (640, 360))
 
             # Perform object detection on the resized frame
-            results = model(frame, stream=True)
+            results = model(frame, stream=True, device='cuda')
             
             detection_occurred = False
             
@@ -143,10 +154,3 @@ def model(path_x, user, loc, user_mail, CameraID, coroodinate, limit,model_type)
                     img_name += 1
             
             yield frame
-
-        
-
-
-
-    
-

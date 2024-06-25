@@ -377,29 +377,49 @@ def update(id):
 		return render_template("update.html", form=form,name_to_update = name_to_update,id = id)
 
     
-#charts     
 from datetime import datetime, timedelta
+from flask import jsonify
 
 @app.route('/get_snapshot_data')
 @login_required
 def get_snapshot_data():
-    # Check if the current user is an admin
+    # Fetch snapshots based on user role
     if current_user.username == 'admin':
-    # Fetch all snapshots
         snapshot_data_all_users = Snapshots.query.all()
     else:
-    # Fetch snapshots associated with the current user
         snapshot_data_all_users = current_user.alerts
 
-
-    # Countthe number of snapshots per location
+    # Initialize dictionaries to store counts
     snapshot_counts_location = {}
+    snapshot_counts_detection_type = {}
+    snapshot_counts_location_type = {}
+    detection_counts_camera = {
+        '0': {'fire': 0, 'gun': 0, 'person': 0, 'knife': 0},
+        '1': {'fire': 0, 'gun': 0, 'person': 0, 'knife': 0}
+    }
+
     for snapshot in snapshot_data_all_users:
         loc = snapshot.Loc
-        if loc in snapshot_counts_location:
-            snapshot_counts_location[loc] += 1
-        else:
-            snapshot_counts_location[loc] = 1
+        detection_type = snapshot.Detection_type
+        cam_id = str(snapshot.CameraID)
+
+        # Count per location
+        snapshot_counts_location[loc] = snapshot_counts_location.get(loc, 0) + 1
+
+        # Count per detection type
+        snapshot_counts_detection_type[detection_type] = snapshot_counts_detection_type.get(detection_type, 0) + 1
+
+        # Count per location and detection type
+        if loc not in snapshot_counts_location_type:
+            snapshot_counts_location_type[loc] = {
+                'person': 0, 'gun': 0, 'knife': 0, 'fire': 0
+            }
+        if detection_type in snapshot_counts_location_type[loc]:
+            snapshot_counts_location_type[loc][detection_type] += 1
+
+        # Count per camera ID and detection type
+        if detection_type in detection_counts_camera[cam_id]:
+            detection_counts_camera[cam_id][detection_type] += 1
 
     # Fetch timestamps for all snapshots
     snapshot_data_time = db.session.query(Snapshots.Time).all()
@@ -409,69 +429,19 @@ def get_snapshot_data():
     for snapshot_time in snapshot_data_time:
         # Extract the date from the timestamp
         day_key = snapshot_time[0].strftime('%Y-%m-%d')
-        if day_key in snapshot_counts_time:
-            snapshot_counts_time[day_key] += 1
-        else:
-            snapshot_counts_time[day_key] = 1
-
-    # Count the number of snapshots per detection type
-    snapshot_counts_detection_type = {}
-    for snapshot in snapshot_data_all_users:
-        detection_type = snapshot.Detection_type
-        if detection_type in snapshot_counts_detection_type:
-            snapshot_counts_detection_type[detection_type] += 1
-        else:
-            snapshot_counts_detection_type[detection_type] = 1
-
-    # Count the number of snapshots per CameraID -> 0 and CameraID -> 1
-    count_camera_id_0 = 0
-    count_camera_id_1 = 0
-    for snapshot in snapshot_data_all_users:
-        if snapshot.CameraID == 0:
-            count_camera_id_0 += 1
-        elif snapshot.CameraID == 1:
-            count_camera_id_1 += 1
-
-
-
-  # Count the number of snapshots per CameraID -> 0 and CameraID -> 1
-    count_camera_id_0_fire = 0
-    count_camera_id_1_fire = 0
-    count_camera_id_0_gun = 0
-    count_camera_id_1_gun = 0
-    count_camera_id_0_person = 0
-    count_camera_id_1_person = 0
-    count_camera_id_0_knife = 0
-    count_camera_id_1_knife = 0
-
-    for snapshot in snapshot_data_all_users:
-        if snapshot.CameraID == 0:
-            if snapshot.Detection_type == 'fire':
-                count_camera_id_0_fire += 1
-            if snapshot.Detection_type == 'gun':
-                count_camera_id_0_gun += 1
-            if snapshot.Detection_type == 'person':
-                count_camera_id_0_person += 1
-            if snapshot.Detection_type == 'knife':
-                count_camera_id_0_knife += 1
-        elif snapshot.CameraID == 1:
-            if snapshot.Detection_type == 'fire':
-                count_camera_id_1_fire += 1
-            if snapshot.Detection_type == 'gun':
-                count_camera_id_1_gun += 1
-            if snapshot.Detection_type == 'person':
-                count_camera_id_1_person += 1
-            if snapshot.Detection_type == 'knife':
-                count_camera_id_1_knife += 1
-
-
+        snapshot_counts_time[day_key] = snapshot_counts_time.get(day_key, 0) + 1
 
     # Generate labels for the last 7 days
     today = datetime.utcnow().date()
-    labels_time = [(today - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(6, -1, -1)]
+    labels_time = [(today - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(29, -1, -1)]
 
     # Create counts for each label, defaulting to 0 if no data for a day
     counts_time = [snapshot_counts_time.get(label, 0) for label in labels_time]
+
+    # Prepare data for JSON response
+    locations = list(snapshot_counts_location_type.keys())
+    detection_types = ['person', 'gun', 'knife', 'fire']
+    counts_per_type = {dtype: [snapshot_counts_location_type[loc][dtype] for loc in locations] for dtype in detection_types}
 
     return jsonify(
         labels_location=list(snapshot_counts_location.keys()),
@@ -480,17 +450,59 @@ def get_snapshot_data():
         counts_time=counts_time,
         labels_detection_type=list(snapshot_counts_detection_type.keys()),
         counts_detection_type=list(snapshot_counts_detection_type.values()),
-        count_camera_id_0=count_camera_id_0,
-        count_camera_id_1=count_camera_id_1,
-        count_camera_id_0_fire=count_camera_id_0_fire,
-        count_camera_id_1_fire=count_camera_id_1_fire,
-        count_camera_id_0_knife=count_camera_id_0_knife,
-        count_camera_id_1_knife=count_camera_id_1_knife,
-        count_camera_id_0_gun=count_camera_id_0_gun,
-        count_camera_id_1_gun=count_camera_id_1_gun,
-        count_camera_id_0_person=count_camera_id_0_person,
-        count_camera_id_1_person=count_camera_id_1_person
+        count_camera_id_0=detection_counts_camera['0'],
+        count_camera_id_1=detection_counts_camera['1'],
+        locations=locations,
+        detection_types=detection_types,
+        counts_per_type=counts_per_type,
+        count_camera_id_0_fire=detection_counts_camera['0']['fire'],
+        count_camera_id_1_fire=detection_counts_camera['1']['fire'],
+        count_camera_id_0_knife=detection_counts_camera['0']['knife'],
+        count_camera_id_1_knife=detection_counts_camera['1']['knife'],
+        count_camera_id_0_gun=detection_counts_camera['0']['gun'],
+        count_camera_id_1_gun=detection_counts_camera['1']['gun'],
+        count_camera_id_0_person=detection_counts_camera['0']['person'],
+        count_camera_id_1_person=detection_counts_camera['1']['person']
     )
 
+from datetime import datetime, timedelta
+from flask import jsonify, request
 
+@app.route('/get_daily_snapshot_counts')
+@login_required
+def get_daily_snapshot_counts():
+    days = int(request.args.get('days', 7))  # Default to 7 days if parameter is not provided or invalid
 
+    # Fetch snapshots based on user role
+    if current_user.username == 'admin':
+        snapshot_data_all_users = Snapshots.query.all()
+    else:
+        snapshot_data_all_users = current_user.alerts
+
+    # Initialize dictionary to store counts
+    snapshot_counts_time = {}
+
+    # Fetch timestamps for all snapshots
+    snapshot_data_time = db.session.query(Snapshots.Time).all()
+
+    # Count the number of snapshots per day for the specified number of days
+    today = datetime.utcnow().date()
+    labels_time = [(today - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(days - 1, -1, -1)]
+
+    for snapshot_time in snapshot_data_time:
+        # Extract the date from the timestamp
+        day_key = snapshot_time[0].date().strftime('%Y-%m-%d')
+        if day_key in snapshot_counts_time:
+            snapshot_counts_time[day_key] += 1
+        else:
+            snapshot_counts_time[day_key] = 1
+
+    # Create counts for each label, defaulting to 0 if no data for a day
+    counts_time = [snapshot_counts_time.get(label, 0) for label in labels_time]
+
+    return jsonify(
+        labels_time=labels_time,
+        counts_time=counts_time
+        
+    )
+   

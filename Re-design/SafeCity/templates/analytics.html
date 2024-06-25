@@ -1,49 +1,66 @@
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+<!DOCTYPE html>
+<html lang="en">
 
-{% extends 'parent-page1.html' %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    .background-image {
+      background-image: url('your-background-image.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center center;
+    }
+    /* Adjust other CSS styles as needed */
+  </style>
+</head>
 
-{% block title %}
+<body>
+  {% extends 'parent-page1.html' %}
+  {% block title %}
   Analytics
-{% endblock %}
-
-{% block content %}
-  <link rel="stylesheet" href="../static/analytics.css" />
-   
-  <h1>Incidents Statistics</h1>
+  {% endblock %}
+  {% block content %}
   <hr>
-  <div class="background-image -variant-t2" style="display: flex; justify-content: space-between; width: 80%; margin: 0 auto; ">
+  <div class="background-image -variant-t2" style="display: flex; justify-content: space-between; width: 80%; margin: 0 auto;">
     <div class="shadow-lg p-3 mb-5 bg-white rounded" style="flex: 1; margin-right: 10px;">
-      <canvas id="snapshotChartLocation"></canvas>
+      <canvas id="snapshotChartLocation">not ready yet</canvas>
     </div>
     <div class="shadow-lg p-3 mb-5 bg-white rounded" style="flex: 1; margin-left: 10px;">
       <canvas id="snapshotChartDetectionType_bar"></canvas>
     </div>
   </div>
-  <br>  <br>
-
+  <div>
+    <label for="daysInput">Number of Days:</label>
+    <input type="number" id="daysInput" name="daysInput" min="1" max="30" value="7">
+    <button onclick="fetchSnapshotCounts()">Generate Chart</button>
+  </div>
+  <br> <br>
+  <div class="shadow-lg p-3 mb-5 bg-white rounded" style="width: 80%; margin: 0 auto;">
+    <canvas id="snapshotChartTime"></canvas>
+  </div>
+  <br> <br>
   <div class="shadow-lg p-3 mb-5 bg-white rounded" style="display: flex; flex-wrap: wrap; justify-content: space-between; width: 80%; margin: 0 auto;">
     <div class="incident-counter shadow-lg p-3 mb-5 bg-white rounded" style="flex: 1; margin: 5px;">
-      <h3 class="counter-text">Crowd detection</h3>
+      <h3 class="counter-text" style="color: #4285F4;">Crowd detection</h3>
       <h1 class="counter-value">0</h1>
     </div>
     <div class="incident-counter shadow-lg p-3 mb-5 bg-white rounded" style="flex: 1; margin: 5px;">
-      <h3 class="counter-text">Gun possession</h3>
+      <h3 class="counter-text" style="color: #34A853">Gun possession</h3>
       <h1 class="counter-value">0</h1>
     </div>
     <div class="incident-counter shadow-lg p-3 mb-5 bg-white rounded" style="flex: 1; margin: 5px;">
-      <h3 class="counter-text">Knife possession</h3>
+      <h3 class="counter-text " style="color: #FBBC05">Knife possession</h3>
       <h1 class="counter-value">0</h1>
     </div>
     <div class="incident-counter shadow-lg p-3 mb-5 bg-white rounded" style="flex: 1; margin: 5px;">
-      <h3>Fire incident</h3>
+      <h3 style="color: #EA4335;">Fire incident</h3>
       <h1 class="counter-value">0</h1>
     </div>
   </div>
-
   <div id="map" style="width: 80%; height: 500px; margin: 0 auto;"></div>
-
   <div>
     <label for="detectionTypeSelect">Select Detection Type:</label>
     <select id="detectionTypeSelect">
@@ -53,21 +70,64 @@
       <option value="fire">Fire</option>
     </select>
   </div>
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
   <script>
+    function fetchSnapshotCounts() {
+      const days = document.getElementById('daysInput').value;
+      fetch(`/get_daily_snapshot_counts?days=${days}`)
+        .then(response => response.json())
+        .then(data => {
+          const ctxTime = document.getElementById('snapshotChartTime').getContext('2d');
+          new Chart(ctxTime, {
+            type: 'bar',
+            data: {
+              labels: data.labels_time,
+              datasets: [{
+                label: 'Snapshots per Day',
+                data: data.counts_time,
+                backgroundColor: 'lightpink',
+                borderColor: 'blue',
+                borderWidth: 1
+              }]
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    stepSize: 1
+                  }
+                },
+                x: {
+                  color: 'black',
+                  ticks: {
+                    font: {
+                      weight: 'bold'
+                    }
+                  }
+                }
+              },
+              plugins: {
+                legend: {
+                  labels: {
+                    color: 'black',
+                    weight: 'bold'
+                  }
+                }
+              }
+            }
+          });
+        });
+    }
+
     fetch('/get_snapshot_data')
       .then(response => response.json())
       .then(data => {
-        const locationLabels = data.labels_location;
-        const detectionTypeLabels = data.labels_detection_type;
-        const totalCount = data.counts_detection_type.reduce((a, b) => a + b, 0);
-
-        // Function to get counts for a specific detection type (people, gun, knife, fire)
-        function getDetectionTypeCount(detectionType) {
-          const index = detectionTypeLabels.indexOf(detectionType);
-          return index !== -1 ? data.counts_detection_type[index] : 0;
-        }
+        const locations = data.locations;
+        const detectionTypes = data.detection_types;
+        const countsPerType = data.counts_per_type;
 
         // Incident counter elements
         const peopleCount = document.querySelector('.incident-counter:nth-child(1) .counter-value');
@@ -76,46 +136,38 @@
         const fireCount = document.querySelector('.incident-counter:nth-child(4) .counter-value');
 
         // Set incident counts
-        peopleCount.textContent = getDetectionTypeCount('person');
-        gunCount.textContent = getDetectionTypeCount('gun');
-        knifeCount.textContent = getDetectionTypeCount('knife');
-        fireCount.textContent = getDetectionTypeCount('fire');
+        peopleCount.textContent = countsPerType['person'].reduce((a, b) => a + b, 0);
+        gunCount.textContent = countsPerType['gun'].reduce((a, b) => a + b, 0);
+        knifeCount.textContent = countsPerType['knife'].reduce((a, b) => a + b, 0);
+        fireCount.textContent = countsPerType['fire'].reduce((a, b) => a + b, 0);
 
-        // Chart for number of snapshots per location (stacked bar chart)
+        // Chart for number of snapshots per location (bar chart with multiple datasets)
         const ctxLocation = document.getElementById('snapshotChartLocation').getContext('2d');
-        const locationDatasets = [];
-        const detectionTypes = ['person', 'gun', 'knife', 'fire'];
 
-        for (const detectionType of detectionTypes) {
-          const detectionData = data.counts_detection_type.map(count => {
-            const detectionCount = getDetectionTypeCount(detectionType);
-            return detectionCount > 0 ? detectionCount : null;
-          });
-          locationDatasets.push({
-            label: detectionType,
-            data: detectionData,
-            backgroundColor: detectionType === 'person' ? 'lightblue' : (
-              detectionType === 'gun' ? 'red' : (
-                detectionType === 'knife' ? 'orange' : 'yellow'
+        const locationDatasets = detectionTypes.map(detectionType => {
+          return {
+            label: detectionType.charAt(0).toUpperCase() + detectionType.slice(1),
+            data: countsPerType[detectionType],
+            backgroundColor: detectionType === 'person' ? '#4285F4' : (
+              detectionType === 'gun' ? '#34A853' : (
+                detectionType === 'knife' ? '#FBBC05' : '#EA4335'
               )
             ),
             borderColor: 'white',
-            borderWidth: 1,
-            stack: 'detectionTypes'
-          });
-        }
+            borderWidth: 1
+          };
+        });
 
         new Chart(ctxLocation, {
           type: 'bar',
           data: {
-            labels: locationLabels,
+            labels: locations,
             datasets: locationDatasets
           },
           options: {
             scales: {
               y: {
-                stacked: true,
-                display: false,
+                display: true,
                 beginAtZero: true
               },
               x: {
@@ -143,15 +195,15 @@
         new Chart(ctxDetectionType, {
           type: 'bar',
           data: {
-            labels: detectionTypeLabels,
+            labels: detectionTypes,
             datasets: [{
-              label: 'Incident Counts',
-              data: data.counts_detection_type,
+              label: 'Counts of incidents per type',
+              data: detectionTypes.map(detectionType => countsPerType[detectionType].reduce((a, b) => a + b, 0)),
               backgroundColor: [
-                'lightblue',
-                'red',
-                'orange',
-                'yellow'
+                '#4285F4',
+                '#34A853',
+                '#FBBC05',
+                '#EA4335'
               ],
               borderColor: 'white',
               borderWidth: 1
@@ -160,7 +212,7 @@
           options: {
             scales: {
               y: {
-                display: false,
+                display: true,
                 beginAtZero: true
               },
               x: {
@@ -183,6 +235,8 @@
           }
         });
 
+        
+
         // Leaflet map setup
         const map = L.map('map').setView([30.0075, 31.3065], 15);
 
@@ -198,7 +252,7 @@
             [30.010445275863656, 31.303651797253742, data.count_camera_id_1_person]
           ],
           gun: [
-            [30.006831407362444, 31.30354670803956, data.count_camera_id_0_gun],
+            [30.006831407362444,          31.30354670803956, data.count_camera_id_0_gun],
             [30.010445275863656, 31.303651797253742, data.count_camera_id_1_gun]
           ],
           knife: [
@@ -222,4 +276,6 @@
         });
       });
   </script>
+  </body>
+  </html>
 {% endblock %}
